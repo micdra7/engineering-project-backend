@@ -9,6 +9,8 @@ import {
 } from 'typeorm';
 import { Task } from '../../tasks/entities/task.entity';
 import { Call } from '../../calls/entities/call.entity';
+import { UserChatrooms } from '../../chatrooms/entities/userChatrooms.entity';
+import { Message } from '../../chatrooms/entities/message.entity';
 
 @Entity()
 export class User {
@@ -33,6 +35,9 @@ export class User {
   @OneToMany(() => UserWorkspaces, userWorkspaces => userWorkspaces.user)
   userWorkspaces!: UserWorkspaces;
 
+  @OneToMany(() => UserChatrooms, userChatrooms => userChatrooms.user)
+  userChatrooms!: UserChatrooms;
+
   @ManyToMany(() => Task, task => task.users)
   @JoinTable()
   tasks: Task[];
@@ -40,4 +45,8 @@ export class User {
   @ManyToMany(() => Call, call => call.users)
   @JoinTable()
   calls: Call[];
+
+  @ManyToMany(() => Message, message => message.users)
+  @JoinTable()
+  messages: Message[];
 }
