@@ -1,4 +1,13 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { UserWorkspaces } from '../../workspaces/entities/userWorkspaces.entity';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Task } from '../../tasks/entities/task.entity';
 
 @Entity()
 export class User {
@@ -19,4 +28,11 @@ export class User {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @OneToMany(() => UserWorkspaces, userWorkspaces => userWorkspaces.user)
+  userWorkspaces!: UserWorkspaces;
+
+  @ManyToMany(() => Task, task => task.users)
+  @JoinTable()
+  tasks: Task[];
 }
