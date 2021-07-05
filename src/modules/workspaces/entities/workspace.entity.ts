@@ -2,6 +2,7 @@ import { TaskList } from '../../tasks/entities/taskList.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Role } from './role.enum';
 import { UserWorkspaces } from './userWorkspaces.entity';
+import { Game } from '../../games/entities/game.entity';
 
 @Entity()
 export class Workspace {
@@ -19,4 +20,7 @@ export class Workspace {
 
   @OneToMany(() => TaskList, taskList => taskList.workspace)
   taskLists: TaskList[];
+
+  @OneToMany(() => Game, game => game.workspace)
+  games: Game[];
 }

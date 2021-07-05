@@ -11,6 +11,7 @@ import { Task } from '../../tasks/entities/task.entity';
 import { Call } from '../../calls/entities/call.entity';
 import { UserChatrooms } from '../../chatrooms/entities/userChatrooms.entity';
 import { Message } from '../../chatrooms/entities/message.entity';
+import { GameResult } from '../../games/entities/gameResult.entity';
 
 @Entity()
 export class User {
@@ -37,6 +38,9 @@ export class User {
 
   @OneToMany(() => UserChatrooms, userChatrooms => userChatrooms.user)
   userChatrooms!: UserChatrooms;
+
+  @OneToMany(() => GameResult, gameResult => gameResult.user)
+  gameResults: GameResult[];
 
   @ManyToMany(() => Task, task => task.users)
   @JoinTable()
