@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Task } from '../../tasks/entities/task.entity';
+import { Call } from '../../calls/entities/call.entity';
 
 @Entity()
 export class User {
@@ -35,4 +36,8 @@ export class User {
   @ManyToMany(() => Task, task => task.users)
   @JoinTable()
   tasks: Task[];
+
+  @ManyToMany(() => Call, call => call.users)
+  @JoinTable()
+  calls: Call[];
 }
