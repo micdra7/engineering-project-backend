@@ -1,1 +1,3 @@
-export class CreateWorkspaceDto {}
+export class CreateWorkspaceDto {
+  name: string;
+}
