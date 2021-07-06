@@ -7,4 +7,5 @@ export default () => ({
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
   },
+  saltOrRounds: parseInt(process.env.SALT_OR_ROUNDS, 10) || 10,
 });
