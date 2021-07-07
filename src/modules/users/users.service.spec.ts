@@ -11,12 +11,8 @@ describe('UsersService', () => {
   let service: UsersService;
   let connection: Connection;
   const mockManager = {
-    create: jest.fn().mockImplementation(() => {
-      return new User();
-    }),
-    save: jest.fn().mockImplementation(() => {
-      return new User();
-    }),
+    create: jest.fn().mockReturnValue({}),
+    save: jest.fn().mockReturnValue({}),
   };
   const mockConnection = () => ({
     transaction: jest.fn().mockImplementation(async callback => {
