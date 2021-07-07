@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { CallsModule } from './modules/calls/calls.module';
 import { ChatroomsModule } from './modules/chatrooms/chatrooms.module';
 import { GamesModule } from './modules/games/games.module';
@@ -22,7 +20,5 @@ import configuration from './utils/configuration';
     GamesModule,
     TasksModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
