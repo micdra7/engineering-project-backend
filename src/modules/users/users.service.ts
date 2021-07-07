@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
@@ -17,8 +17,6 @@ import { Role } from '../workspaces/entities/role.enum';
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-    @InjectRepository(Workspace)
-    private workspaceRepository: Repository<Workspace>,
     private connection: Connection,
     private readonly configService: ConfigService,
   ) {}
@@ -30,19 +28,6 @@ export class UsersService {
   async register(
     registerUserDto: RegisterUserDto,
   ): Promise<RegisterUserResponse | null> {
-    if (await this.checkIfEmailIsUsed(registerUserDto.email)) {
-      throw new HttpException(
-        'Email is already in use',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    if (await this.checkIfWorkspaceNameIsUsed(registerUserDto.workspaceName)) {
-      throw new HttpException(
-        'Workspace name is already in use',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
     let result: RegisterUserResponse = null;
 
     const user: CreateUserDto = {
@@ -111,16 +96,7 @@ export class UsersService {
     await this.userRepository.delete(id);
   }
 
-  private async checkIfEmailIsUsed(email: string): Promise<boolean> {
-    return (await this.userRepository.find({ where: { email } })).length > 0;
-  }
-
-  private async checkIfWorkspaceNameIsUsed(
-    workspaceName: string,
-  ): Promise<boolean> {
-    return (
-      (await this.workspaceRepository.find({ where: { name: workspaceName } }))
-        .length > 0
-    );
+  async findByEmail(email: string): Promise<User> {
+    return this.userRepository.findOne({ where: { email } });
   }
 }
