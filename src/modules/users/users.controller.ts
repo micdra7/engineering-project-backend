@@ -14,6 +14,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { WorkspacesService } from '../workspaces/workspaces.service';
+import { isEmptyObject } from '../../utils/helper';
 
 @Controller('users')
 export class UsersController {
@@ -29,7 +30,7 @@ export class UsersController {
 
   @Post('/register')
   async register(@Body() registerUserDto: RegisterUserDto) {
-    if (!registerUserDto) {
+    if (!registerUserDto || isEmptyObject(registerUserDto)) {
       throw new HttpException(
         'Request body cannot be empty',
         HttpStatus.BAD_REQUEST,
