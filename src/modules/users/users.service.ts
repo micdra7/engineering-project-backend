@@ -19,8 +19,6 @@ export class UsersService {
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Workspace)
     private workspaceRepository: Repository<Workspace>,
-    @InjectRepository(UserWorkspaces)
-    private userWorkspacesRepository: Repository<UserWorkspaces>,
     private connection: Connection,
     private readonly configService: ConfigService,
   ) {}
