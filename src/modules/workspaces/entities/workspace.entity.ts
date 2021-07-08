@@ -1,6 +1,5 @@
 import { TaskList } from '../../tasks/entities/taskList.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Role } from './role.enum';
 import { UserWorkspaces } from './userWorkspaces.entity';
 import { Game } from '../../games/entities/game.entity';
 
@@ -11,9 +10,6 @@ export class Workspace {
 
   @Column()
   name: string;
-
-  @Column()
-  role: Role;
 
   @OneToMany(() => UserWorkspaces, userWorkspaces => userWorkspaces.workspace)
   userWorkspaces!: UserWorkspaces[];

@@ -1,7 +1,7 @@
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 
-// create-user is used when user is created by admin
-export class CreateUserDto {
+// register-user dto is used during standard registration flow
+export class RegisterUserDto {
   @IsEmail()
   @IsNotEmpty()
   email: string;
@@ -14,5 +14,8 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @MinLength(8)
-  password?: string;
+  password: string;
+
+  @IsNotEmpty()
+  workspaceName: string;
 }

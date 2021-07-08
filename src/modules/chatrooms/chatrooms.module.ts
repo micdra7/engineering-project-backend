@@ -4,6 +4,6 @@ import { ChatroomsController } from './chatrooms.controller';
 
 @Module({
   controllers: [ChatroomsController],
-  providers: [ChatroomsService]
+  providers: [ChatroomsService],
 })
 export class ChatroomsModule {}
