@@ -63,4 +63,29 @@ describe('UsersController (e2e)', () => {
       })
       .expect(201);
   });
+
+  it('/users/authenticate fails with empty body (POST)', () => {
+    return request(app.getHttpServer()).post('/users/authenticate').expect(400);
+  });
+
+  it('/users/authenticate fails dto validation (POST)', () => {
+    return request(app.getHttpServer())
+      .post('/users/authenticate')
+      .send({ email: '', password: '' })
+      .expect(400);
+  });
+
+  it('/users/authenticate fails for invalid credentials (POST)', () => {
+    return request(app.getHttpServer())
+      .post('/users/authenticate')
+      .send({ email: 'test1@test.net', password: 'QWE12345rty$' })
+      .expect(400);
+  });
+
+  it('/users/authenticate succeeds for valid credentials (POST)', () => {
+    return request(app.getHttpServer())
+      .post('/users/authenticate')
+      .send({ email: 'test1@test.net', password: 'QWE12345rty$' })
+      .expect(200);
+  });
 });
