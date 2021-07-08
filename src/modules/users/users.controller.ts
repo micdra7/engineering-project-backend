@@ -15,6 +15,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { WorkspacesService } from '../workspaces/workspaces.service';
 import { isEmptyObject } from '../../utils/helper';
+import { AuthenticateUserDto } from './dto/authenticate-user.dto';
+import { AuthenticateUserResponse } from './response/authenticate-user.response';
 
 @Controller('users')
 export class UsersController {
@@ -59,6 +61,13 @@ export class UsersController {
     }
 
     return this.usersService.register(registerUserDto);
+  }
+
+  @Post('/authenticate')
+  async authenticate(
+    @Body() authenticateUserDto: AuthenticateUserDto,
+  ): Promise<AuthenticateUserResponse> {
+    return null;
   }
 
   @Get()

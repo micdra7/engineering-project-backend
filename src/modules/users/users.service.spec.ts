@@ -62,4 +62,20 @@ describe('UsersService', () => {
     expect(mockManager.create).toBeCalledTimes(3);
     expect(mockManager.save).toBeCalledTimes(3);
   });
+
+  it('authenticate - should return access and refresh tokens for valid credentials', async () => {
+    const dto: RegisterUserDto = {
+      email: 'test@test.net',
+      firstName: 'John',
+      lastName: 'Doe',
+      password: 'MyVerySecretPassword123$',
+      workspaceName: 'Test workspace',
+    };
+
+    await service.register(dto);
+
+    expect(connection.transaction).toHaveBeenCalled();
+    expect(mockManager.create).toBeCalledTimes(3);
+    expect(mockManager.save).toBeCalledTimes(3);
+  });
 });

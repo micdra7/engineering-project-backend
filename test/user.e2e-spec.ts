@@ -78,14 +78,14 @@ describe('UsersController (e2e)', () => {
   it('/users/authenticate fails for invalid credentials (POST)', () => {
     return request(app.getHttpServer())
       .post('/users/authenticate')
-      .send({ email: 'test1@test.net', password: 'QWE12345rty$' })
+      .send({ email: 'test@test.net', password: 'QWE12345rty$a' })
       .expect(400);
   });
 
   it('/users/authenticate succeeds for valid credentials (POST)', () => {
     return request(app.getHttpServer())
       .post('/users/authenticate')
-      .send({ email: 'test1@test.net', password: 'QWE12345rty$' })
+      .send({ email: 'test@test.net', password: 'QWE12345rty$' })
       .expect(200);
   });
 });

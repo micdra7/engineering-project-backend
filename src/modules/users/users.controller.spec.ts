@@ -2,8 +2,10 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Workspace } from '../workspaces/entities/workspace.entity';
 import { WorkspacesService } from '../workspaces/workspaces.service';
+import { AuthenticateUserDto } from './dto/authenticate-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { User } from './entities/user.entity';
+import { AuthenticateUserResponse } from './response/authenticate-user.response';
 import { RegisterUserResponse } from './response/register-user.response';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
@@ -166,5 +168,42 @@ describe('UsersController', () => {
     expect(async () => {
       await controller.register(dto);
     }).rejects.toThrow(HttpException);
+  });
+
+  it('authenticate - should throw for empty (null | undefined) body', async () => {
+    let dto: AuthenticateUserDto = null;
+
+    expect(async () => {
+      await controller.authenticate(dto);
+    }).rejects.toThrow(HttpException);
+
+    dto = undefined;
+
+    expect(async () => {
+      await controller.authenticate(dto);
+    }).rejects.toThrow(HttpException);
+  });
+
+  it('authenticate - should throw for invalid credentials', async () => {
+    const dto: AuthenticateUserDto = {
+      email: 'test@test.net',
+      password: 'QWE12345rty$a',
+    };
+
+    expect(async () => {
+      await controller.authenticate(dto);
+    }).rejects.toThrow(HttpException);
+  });
+
+  it('authenticate - should return access and refresh tokens for valid credentials', async () => {
+    const dto: AuthenticateUserDto = {
+      email: 'test@test.net',
+      password: 'QWE12345rty$',
+    };
+
+    const result: AuthenticateUserResponse = await controller.authenticate(dto);
+
+    expect(result).toHaveProperty('accessToken');
+    expect(result).toHaveProperty('refreshToken');
   });
 });
