@@ -11,7 +11,7 @@ export class Workspace {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ default: false })
   isDefault: boolean;
 
   @OneToMany(() => UserWorkspaces, userWorkspaces => userWorkspaces.workspace)
