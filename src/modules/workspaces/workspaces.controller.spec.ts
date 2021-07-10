@@ -23,6 +23,7 @@ describe('WorkspacesController', () => {
                     userWorkspaces: null,
                     taskLists: null,
                     games: null,
+                    isDefault: false,
                   });
                 }
 

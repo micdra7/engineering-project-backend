@@ -83,6 +83,7 @@ describe('UsersController', () => {
                     userWorkspaces: null,
                     taskLists: null,
                     games: null,
+                    isDefault: false,
                   });
                 }
 

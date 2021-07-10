@@ -3,8 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
 import { Workspace } from '../workspaces/entities/workspace.entity';
+import { AuthenticateUserDto } from './dto/authenticate-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { User } from './entities/user.entity';
+import { AuthenticateUserResponse } from './response/authenticate-user.response';
 import { UsersService } from './users.service';
 
 describe('UsersService', () => {
@@ -64,18 +66,14 @@ describe('UsersService', () => {
   });
 
   it('authenticate - should return access and refresh tokens for valid credentials', async () => {
-    const dto: RegisterUserDto = {
+    const dto: AuthenticateUserDto = {
       email: 'test@test.net',
-      firstName: 'John',
-      lastName: 'Doe',
-      password: 'MyVerySecretPassword123$',
-      workspaceName: 'Test workspace',
+      password: 'QWE12345rty$',
     };
 
-    await service.register(dto);
+    const result: AuthenticateUserResponse = await service.authenticate(dto);
 
-    expect(connection.transaction).toHaveBeenCalled();
-    expect(mockManager.create).toBeCalledTimes(3);
-    expect(mockManager.save).toBeCalledTimes(3);
+    expect(result).toHaveProperty('accessToken');
+    expect(result).toHaveProperty('refreshToken');
   });
 });
