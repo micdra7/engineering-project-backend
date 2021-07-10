@@ -9,4 +9,6 @@ export class UserWorkspacesResponse {
 
   @IsNotEmpty()
   workspaceName: string;
+
+  isDefault: boolean;
 }
