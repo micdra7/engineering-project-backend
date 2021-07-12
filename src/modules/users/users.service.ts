@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
@@ -12,8 +12,7 @@ import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { RegisterUserResponse } from './response/register-user.response';
 import { Role } from '../workspaces/entities/role.enum';
-import { AuthenticateUserDto } from './dto/authenticate-user.dto';
-import { AuthenticateUserResponse } from './response/authenticate-user.response';
+import { UserWorkspacesResponse } from '../workspaces/responses/userWorkspaces.response';
 
 @Injectable()
 export class UsersService {
@@ -21,6 +20,10 @@ export class UsersService {
     @InjectRepository(User) private userRepository: Repository<User>,
     private connection: Connection,
     private readonly configService: ConfigService,
+    @InjectRepository(UserWorkspaces)
+    private userWorkspacesRepository: Repository<UserWorkspaces>,
+    @InjectRepository(Workspace)
+    private workspaceRepository: Repository<Workspace>,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -82,21 +85,6 @@ export class UsersService {
     return result;
   }
 
-  async authenticate(authenticateUserDto: AuthenticateUserDto): Promise<User> {
-    const user: User = await this.userRepository.findOne({
-      where: { email: authenticateUserDto.email },
-    });
-
-    if (
-      user &&
-      (await bcrypt.compare(authenticateUserDto.password, user.passwordHash))
-    ) {
-      return user;
-    }
-
-    return null;
-  }
-
   findAll(): Promise<User[]> {
     return this.userRepository.find();
   }
@@ -115,5 +103,21 @@ export class UsersService {
 
   async findByEmail(email: string): Promise<User> {
     return this.userRepository.findOne({ where: { email } });
+  }
+
+  async getUserWorkspaces(userId: number): Promise<UserWorkspacesResponse[]> {
+    const userWorkspaces = await this.userWorkspacesRepository.find({
+      where: { userId },
+      relations: ['workspace'],
+    });
+
+    return userWorkspaces.map(uw => {
+      return {
+        id: uw.workspaceId,
+        role: uw.role,
+        workspaceName: uw.workspace.name,
+        isDefault: uw.workspace.isDefault,
+      };
+    });
   }
 }
