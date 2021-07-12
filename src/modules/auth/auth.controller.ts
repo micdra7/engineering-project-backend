@@ -10,9 +10,12 @@ import {
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LocalAuthGuard } from './guard/local-auth.guard';
-import { Public } from './public.decorator';
+import { Public } from './decorator/public.decorator';
 import { AuthenticateResponse } from './response/authenticate.response';
 import { RegisterResponse } from './response/register.response';
+import { Roles } from './decorator/roles.decorator';
+import { Role } from '../workspaces/entities/role.enum';
+import { RolesGuard } from './guard/roles.guard';
 
 @Controller('auth')
 export class AuthController {
