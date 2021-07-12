@@ -2,9 +2,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
-import { Workspace } from '../workspaces/entities/workspace.entity';
-import { AuthenticateUserDto } from './dto/authenticate-user.dto';
-import { RegisterUserDto } from './dto/register-user.dto';
+import { UserWorkspaces } from '../workspaces/entities/userWorkspaces.entity';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 
@@ -34,7 +32,10 @@ describe('UsersService', () => {
       providers: [
         UsersService,
         { provide: getRepositoryToken(User), useClass: Repository },
-        { provide: getRepositoryToken(Workspace), useClass: Repository },
+        {
+          provide: getRepositoryToken(UserWorkspaces),
+          useClass: Repository,
+        },
         { provide: Connection, useFactory: mockConnection },
         { provide: ConfigService, useFactory: mockConfigService },
       ],
@@ -46,21 +47,5 @@ describe('UsersService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
-  });
-
-  it('register - should create and assign user to workspace', async () => {
-    const dto: RegisterUserDto = {
-      email: 'test@test.net',
-      firstName: 'John',
-      lastName: 'Doe',
-      password: 'MyVerySecretPassword123$',
-      workspaceName: 'Test workspace',
-    };
-
-    await service.register(dto);
-
-    expect(connection.transaction).toHaveBeenCalled();
-    expect(mockManager.create).toBeCalledTimes(3);
-    expect(mockManager.save).toBeCalledTimes(3);
   });
 });

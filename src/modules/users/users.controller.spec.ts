@@ -2,10 +2,8 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Workspace } from '../workspaces/entities/workspace.entity';
 import { WorkspacesService } from '../workspaces/workspaces.service';
-import { AuthenticateUserDto } from './dto/authenticate-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { User } from './entities/user.entity';
-import { AuthenticateResponse } from '../auth/dto/authenticate.response';
 import { RegisterUserResponse } from './response/register-user.response';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
@@ -100,74 +98,5 @@ describe('UsersController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
-  });
-
-  it('register - should create and assign user to workspace', async () => {
-    const dto: RegisterUserDto = {
-      email: 'test@test.net',
-      firstName: 'John',
-      lastName: 'Doe',
-      password: 'MyVerySecretPassword123$',
-      workspaceName: 'Test workspace',
-    };
-
-    const expectedResult: RegisterUserResponse = {
-      id: 1,
-      email: dto.email,
-      firstName: dto.firstName,
-      lastName: dto.lastName,
-      isActive: true,
-      workspace: {
-        id: 1,
-        name: dto.workspaceName,
-      },
-    };
-
-    const actualResult: RegisterUserResponse = await controller.register(dto);
-
-    expect(usersService.register).toBeCalled();
-    expect(actualResult).toEqual(expectedResult);
-  });
-
-  it('register - should throw for empty (null | undefined) body', async () => {
-    let dto: RegisterUserDto = null;
-
-    expect(async () => {
-      await controller.register(dto);
-    }).rejects.toThrow(HttpException);
-
-    dto = undefined;
-
-    expect(async () => {
-      await controller.register(dto);
-    }).rejects.toThrow(HttpException);
-  });
-
-  it('register - should throw if email is in use', async () => {
-    const dto: RegisterUserDto = {
-      email: 'alreadyInUse@test.net',
-      firstName: 'John',
-      lastName: 'Doe',
-      password: 'MyVerySecretPassword123$',
-      workspaceName: 'Test workspace',
-    };
-
-    expect(async () => {
-      await controller.register(dto);
-    }).rejects.toThrow(HttpException);
-  });
-
-  it('register - should throw if workspace name is in use', async () => {
-    const dto: RegisterUserDto = {
-      email: 'test@test.net',
-      firstName: 'John',
-      lastName: 'Doe',
-      password: 'MyVerySecretPassword123$',
-      workspaceName: 'Already in use',
-    };
-
-    expect(async () => {
-      await controller.register(dto);
-    }).rejects.toThrow(HttpException);
   });
 });

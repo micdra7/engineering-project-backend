@@ -22,8 +22,6 @@ export class UsersService {
     private readonly configService: ConfigService,
     @InjectRepository(UserWorkspaces)
     private userWorkspacesRepository: Repository<UserWorkspaces>,
-    @InjectRepository(Workspace)
-    private workspaceRepository: Repository<Workspace>,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {

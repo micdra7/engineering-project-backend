@@ -4,7 +4,7 @@ import { UsersService } from '../users/users.service';
 import { AuthLoginDto } from './dto/auth-login.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { AuthenticateResponse } from './dto/authenticate.response';
+import { AuthenticateResponse } from './response/authenticate.response';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
