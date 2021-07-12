@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
@@ -12,6 +12,8 @@ import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { RegisterUserResponse } from './response/register-user.response';
 import { Role } from '../workspaces/entities/role.enum';
+import { AuthenticateUserDto } from './dto/authenticate-user.dto';
+import { AuthenticateUserResponse } from './response/authenticate-user.response';
 
 @Injectable()
 export class UsersService {
@@ -78,6 +80,21 @@ export class UsersService {
     });
 
     return result;
+  }
+
+  async authenticate(authenticateUserDto: AuthenticateUserDto): Promise<User> {
+    const user: User = await this.userRepository.findOne({
+      where: { email: authenticateUserDto.email },
+    });
+
+    if (
+      user &&
+      (await bcrypt.compare(authenticateUserDto.password, user.passwordHash))
+    ) {
+      return user;
+    }
+
+    return null;
   }
 
   findAll(): Promise<User[]> {

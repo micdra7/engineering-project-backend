@@ -8,6 +8,8 @@ import {
   Delete,
   HttpException,
   HttpStatus,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -17,6 +19,7 @@ import { WorkspacesService } from '../workspaces/workspaces.service';
 import { isEmptyObject } from '../../utils/helper';
 import { AuthenticateUserDto } from './dto/authenticate-user.dto';
 import { AuthenticateUserResponse } from './response/authenticate-user.response';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class UsersController {
@@ -64,10 +67,9 @@ export class UsersController {
   }
 
   @Post('/authenticate')
-  async authenticate(
-    @Body() authenticateUserDto: AuthenticateUserDto,
-  ): Promise<AuthenticateUserResponse> {
-    return null;
+  @UseGuards(AuthGuard('local'))
+  async authenticate(@Request() req) {
+    return req.user;
   }
 
   @Get()
