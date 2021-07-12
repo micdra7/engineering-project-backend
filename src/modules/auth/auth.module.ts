@@ -5,9 +5,15 @@ import { AuthService } from './auth.service';
 import { LocalStrategy } from './local.strategy';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
+import { WorkspacesModule } from '../workspaces/workspaces.module';
 
 @Module({
-  imports: [UsersModule, PassportModule, JwtModule.register({})],
+  imports: [
+    UsersModule,
+    WorkspacesModule,
+    PassportModule,
+    JwtModule.register({}),
+  ],
   providers: [AuthService, LocalStrategy],
   exports: [AuthService, LocalStrategy, JwtModule],
   controllers: [AuthController],

@@ -3,10 +3,13 @@ import { User } from '../users/entities/user.entity';
 import { Role } from '../workspaces/entities/role.enum';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { RegisterDto } from './dto/register.dto';
 import { AuthenticateResponse } from './response/authenticate.response';
+import { RegisterResponse } from './response/register.response';
 
 describe('AuthController', () => {
   let controller: AuthController;
+  let authService: AuthService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -32,12 +35,30 @@ describe('AuthController', () => {
                 });
               },
             ),
+            register: jest
+              .fn()
+              .mockImplementation(
+                (registerDto: RegisterDto): Promise<RegisterResponse> => {
+                  return Promise.resolve({
+                    id: 1,
+                    email: registerDto.email,
+                    firstName: registerDto.firstName,
+                    lastName: registerDto.lastName,
+                    isActive: true,
+                    workspace: {
+                      id: 1,
+                      name: registerDto.workspaceName,
+                    },
+                  });
+                },
+              ),
           },
         },
       ],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
+    authService = module.get<AuthService>(AuthService);
   });
 
   it('should be defined', () => {
@@ -67,5 +88,32 @@ describe('AuthController', () => {
     expect(result).toHaveProperty('workspaces');
 
     expect(result.workspaces.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('register - should create and assign user to workspace', async () => {
+    const dto: RegisterDto = {
+      email: 'test@test.net',
+      firstName: 'John',
+      lastName: 'Doe',
+      password: 'MyVerySecretPassword123$',
+      workspaceName: 'Test workspace',
+    };
+
+    const expectedResult: RegisterResponse = {
+      id: 1,
+      email: dto.email,
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      isActive: true,
+      workspace: {
+        id: 1,
+        name: dto.workspaceName,
+      },
+    };
+
+    const actualResult: RegisterResponse = await controller.register(dto);
+
+    expect(authService.register).toBeCalled();
+    expect(actualResult).toEqual(expectedResult);
   });
 });

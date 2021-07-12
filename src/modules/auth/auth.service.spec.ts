@@ -8,9 +8,15 @@ import { UserWorkspacesResponse } from '../workspaces/responses/userWorkspaces.r
 import { Role } from '../workspaces/entities/role.enum';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { RegisterDto } from './dto/register.dto';
+import { HttpException } from '@nestjs/common';
+import { WorkspacesService } from '../workspaces/workspaces.service';
+import { Workspace } from '../workspaces/entities/workspace.entity';
+import { Connection } from 'typeorm';
 
 describe('AuthService', () => {
   let service: AuthService;
+  let connection: Connection;
   const mockConfigService = () => ({
     get(key: string) {
       switch (key) {
@@ -20,8 +26,19 @@ describe('AuthService', () => {
           return '2h';
         case 'jwt.refreshValidFor':
           return '7d';
+        case 'saltOrRounds':
+          return 10;
       }
     },
+  });
+  const mockManager = {
+    create: jest.fn().mockReturnValue({}),
+    save: jest.fn().mockReturnValue({}),
+  };
+  const mockConnection = () => ({
+    transaction: jest.fn().mockImplementation(async callback => {
+      await callback(mockManager);
+    }),
   });
 
   beforeEach(async () => {
@@ -83,10 +100,31 @@ describe('AuthService', () => {
           },
         },
         { provide: ConfigService, useFactory: mockConfigService },
+        {
+          provide: WorkspacesService,
+          useValue: {
+            findByName: jest
+              .fn()
+              .mockImplementation((name: string): Promise<Workspace> => {
+                if (name === 'Test Workspace') {
+                  return Promise.resolve({
+                    id: 1,
+                    name: 'Test Workspace',
+                    isDefault: true,
+                    games: null,
+                    taskLists: null,
+                    userWorkspaces: null,
+                  });
+                }
+              }),
+          },
+        },
+        { provide: Connection, useFactory: mockConnection },
       ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
+    connection = module.get<Connection>(Connection);
   });
 
   it('should be defined', () => {
@@ -138,5 +176,35 @@ describe('AuthService', () => {
     expect(result).toHaveProperty('workspaces');
 
     expect(result.workspaces.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('register - should create and assign user to workspace', async () => {
+    const dto: RegisterDto = {
+      email: 'test1@test.net',
+      firstName: 'John',
+      lastName: 'Doe',
+      password: 'MyVerySecretPassword123$',
+      workspaceName: 'Test1 workspace',
+    };
+
+    await service.register(dto);
+
+    expect(connection.transaction).toHaveBeenCalled();
+    expect(mockManager.create).toBeCalledTimes(3);
+    expect(mockManager.save).toBeCalledTimes(3);
+  });
+
+  it('register - should throw if workspace name is in use', async () => {
+    const dto: RegisterDto = {
+      email: 'test@test.net',
+      firstName: 'John',
+      lastName: 'Doe',
+      password: 'MyVerySecretPassword123$',
+      workspaceName: 'Already in use',
+    };
+
+    expect(async () => {
+      await service.register(dto);
+    }).rejects.toThrow(HttpException);
   });
 });
