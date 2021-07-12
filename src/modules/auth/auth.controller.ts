@@ -9,7 +9,8 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
-import { LocalAuthGuard } from './local-auth.guard';
+import { LocalAuthGuard } from './guard/local-auth.guard';
+import { Public } from './public.decorator';
 import { AuthenticateResponse } from './response/authenticate.response';
 import { RegisterResponse } from './response/register.response';
 
@@ -17,14 +18,16 @@ import { RegisterResponse } from './response/register.response';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @UseGuards(LocalAuthGuard)
   @Post('/login')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(LocalAuthGuard)
+  @Public()
   async login(@Request() req): Promise<AuthenticateResponse> {
     return this.authService.login(req.user);
   }
 
   @Post('/register')
+  @Public()
   async register(@Body() registerDto: RegisterDto): Promise<RegisterResponse> {
     return this.authService.register(registerDto);
   }
