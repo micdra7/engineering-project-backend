@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from './../src/app.module';
+import { AppModule } from '../src/app.module';
 import { Connection } from 'typeorm';
 
-describe('UsersController (e2e)', () => {
+describe('AuthController (e2e)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
@@ -13,6 +13,7 @@ describe('UsersController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe());
     await app.init();
   });
 
@@ -21,13 +22,13 @@ describe('UsersController (e2e)', () => {
     await connection.close();
   });
 
-  it('/users/register fails with empty body (POST)', () => {
-    return request(app.getHttpServer()).post('/users/register').expect(400);
+  it('/auth/register fails with empty body (POST)', () => {
+    return request(app.getHttpServer()).post('/auth/register').expect(400);
   });
 
-  it('/users/register fails dto validation with empty field (POST)', () => {
+  it('/auth/register fails dto validation with empty field (POST)', () => {
     return request(app.getHttpServer())
-      .post('/users/register')
+      .post('/auth/register')
       .send({
         email: 'test123@test.net',
         firstName: '',
@@ -38,9 +39,9 @@ describe('UsersController (e2e)', () => {
       .expect(400);
   });
 
-  it('/users/register fails dto validation with invalid email (POST)', () => {
+  it('/auth/register fails dto validation with invalid email (POST)', () => {
     return request(app.getHttpServer())
-      .post('/users/register')
+      .post('/auth/register')
       .send({
         email: 'test',
         firstName: 'John',
@@ -51,9 +52,9 @@ describe('UsersController (e2e)', () => {
       .expect(400);
   });
 
-  it('/users/register successfully registers (POST)', () => {
+  it('/auth/register successfully registers (POST)', () => {
     return request(app.getHttpServer())
-      .post('/users/register')
+      .post('/auth/register')
       .send({
         email: `test${Math.random() * 10}@test.net`,
         firstName: 'John',
@@ -64,27 +65,27 @@ describe('UsersController (e2e)', () => {
       .expect(201);
   });
 
-  it('/users/authenticate fails with empty body (POST)', () => {
-    return request(app.getHttpServer()).post('/users/authenticate').expect(400);
+  it('/auth/login fails with empty body (POST)', () => {
+    return request(app.getHttpServer()).post('/auth/login').expect(401);
   });
 
-  it('/users/authenticate fails dto validation (POST)', () => {
+  it('/auth/login fails dto validation (POST)', () => {
     return request(app.getHttpServer())
-      .post('/users/authenticate')
+      .post('/auth/login')
       .send({ email: '', password: '' })
-      .expect(400);
+      .expect(401);
   });
 
-  it('/users/authenticate fails for invalid credentials (POST)', () => {
+  it('/auth/login fails for invalid credentials (POST)', () => {
     return request(app.getHttpServer())
-      .post('/users/authenticate')
+      .post('/auth/login')
       .send({ email: 'test@test.net', password: 'QWE12345rty$a' })
-      .expect(400);
+      .expect(401);
   });
 
-  it('/users/authenticate succeeds for valid credentials (POST)', () => {
+  it('/auth/login succeeds for valid credentials (POST)', () => {
     return request(app.getHttpServer())
-      .post('/users/authenticate')
+      .post('/auth/login')
       .send({ email: 'test@test.net', password: 'QWE12345rty$' })
       .expect(200);
   });
