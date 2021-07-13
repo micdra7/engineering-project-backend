@@ -41,10 +41,12 @@ export class AuthService {
 
   async login(user: User): Promise<AuthenticateResponse> {
     const workspaces = await this.usersService.getUserWorkspaces(user.id);
+    const defaultWorkspace = workspaces.filter(w => w.isDefault)[0];
     const payload = {
       email: user.email,
       sub: user.id,
-      role: workspaces.filter(w => w.isDefault === true)[0].role,
+      role: defaultWorkspace.role,
+      wsp: defaultWorkspace.workspaceName,
     };
 
     return {
