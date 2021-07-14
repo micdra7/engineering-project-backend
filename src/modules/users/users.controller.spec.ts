@@ -1,10 +1,9 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Workspace } from '../workspaces/entities/workspace.entity';
 import { WorkspacesService } from '../workspaces/workspaces.service';
-import { RegisterUserDto } from './dto/register-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { RegisterUserResponse } from './response/register-user.response';
+import { UpdateUserResponse } from './response/update-user.response';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
@@ -19,30 +18,6 @@ describe('UsersController', () => {
         {
           provide: UsersService,
           useValue: {
-            register: jest
-              .fn()
-              .mockImplementation(
-                (dto: RegisterUserDto): Promise<RegisterUserResponse> => {
-                  if (!dto || dto.email === 'alreadyInUse@test.net') {
-                    throw new HttpException(
-                      'Bad request',
-                      HttpStatus.BAD_REQUEST,
-                    );
-                  }
-
-                  return Promise.resolve({
-                    id: 1,
-                    email: dto.email,
-                    firstName: dto.firstName,
-                    lastName: dto.lastName,
-                    isActive: true,
-                    workspace: {
-                      id: 1,
-                      name: dto.workspaceName,
-                    },
-                  });
-                },
-              ),
             findByEmail: jest
               .fn()
               .mockImplementation((email: string): Promise<User> => {
@@ -66,6 +41,26 @@ describe('UsersController', () => {
 
                 return Promise.resolve(undefined);
               }),
+            update: jest
+              .fn()
+              .mockImplementation(
+                (
+                  id: number,
+                  dto: UpdateUserDto,
+                ): Promise<UpdateUserResponse> => {
+                  if (id === 1) {
+                    return Promise.resolve({
+                      id: 1,
+                      email: 'test@test.net',
+                      firstName: 'Mike',
+                      lastName: 'Smith',
+                      workspaces: null,
+                    });
+                  }
+
+                  throw new Error();
+                },
+              ),
           },
         },
         {
@@ -81,6 +76,7 @@ describe('UsersController', () => {
                     userWorkspaces: null,
                     taskLists: null,
                     games: null,
+                    isDefault: false,
                   });
                 }
 
@@ -99,72 +95,24 @@ describe('UsersController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('register - should create and assign user to workspace', async () => {
-    const dto: RegisterUserDto = {
+  it('update - successfully updates', async () => {
+    const dto: UpdateUserDto = {
       email: 'test@test.net',
-      firstName: 'John',
-      lastName: 'Doe',
-      password: 'MyVerySecretPassword123$',
-      workspaceName: 'Test workspace',
+      firstName: 'Mike',
+      lastName: 'Smith',
     };
 
-    const expectedResult: RegisterUserResponse = {
+    const expected: UpdateUserResponse = {
       id: 1,
-      email: dto.email,
-      firstName: dto.firstName,
-      lastName: dto.lastName,
-      isActive: true,
-      workspace: {
-        id: 1,
-        name: dto.workspaceName,
-      },
-    };
-
-    const actualResult: RegisterUserResponse = await controller.register(dto);
-
-    expect(usersService.register).toBeCalled();
-    expect(actualResult).toEqual(expectedResult);
-  });
-
-  it('register - should throw for empty (null | undefined) body', async () => {
-    let dto: RegisterUserDto = null;
-
-    expect(async () => {
-      await controller.register(dto);
-    }).rejects.toThrow(HttpException);
-
-    dto = undefined;
-
-    expect(async () => {
-      await controller.register(dto);
-    }).rejects.toThrow(HttpException);
-  });
-
-  it('register - should throw if email is in use', async () => {
-    const dto: RegisterUserDto = {
-      email: 'alreadyInUse@test.net',
-      firstName: 'John',
-      lastName: 'Doe',
-      password: 'MyVerySecretPassword123$',
-      workspaceName: 'Test workspace',
-    };
-
-    expect(async () => {
-      await controller.register(dto);
-    }).rejects.toThrow(HttpException);
-  });
-
-  it('register - should throw if workspace name is in use', async () => {
-    const dto: RegisterUserDto = {
       email: 'test@test.net',
-      firstName: 'John',
-      lastName: 'Doe',
-      password: 'MyVerySecretPassword123$',
-      workspaceName: 'Already in use',
+      firstName: 'Mike',
+      lastName: 'Smith',
+      workspaces: null,
     };
 
-    expect(async () => {
-      await controller.register(dto);
-    }).rejects.toThrow(HttpException);
+    const result: UpdateUserResponse = await controller.update('1', dto);
+
+    expect(usersService.update).toBeCalled();
+    expect(result).toStrictEqual(expected);
   });
 });

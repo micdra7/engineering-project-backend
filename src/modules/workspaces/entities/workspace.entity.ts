@@ -11,6 +11,9 @@ export class Workspace {
   @Column()
   name: string;
 
+  @Column({ default: false })
+  isDefault: boolean;
+
   @OneToMany(() => UserWorkspaces, userWorkspaces => userWorkspaces.workspace)
   userWorkspaces!: UserWorkspaces[];
 

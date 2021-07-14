@@ -21,6 +21,7 @@ describe('WorkspacesService', () => {
                     userWorkspaces: null,
                     taskLists: null,
                     games: null,
+                    isDefault: false,
                   });
                 }
 

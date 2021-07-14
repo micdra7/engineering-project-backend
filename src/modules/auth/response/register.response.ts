@@ -1,4 +1,4 @@
-export class RegisterUserResponse {
+export class RegisterResponse {
   id: number;
   email: string;
   firstName: string;

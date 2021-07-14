@@ -1,7 +1,6 @@
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 
-// register-user dto is used during standard registration flow
-export class RegisterUserDto {
+export class RegisterDto {
   @IsEmail()
   @IsNotEmpty()
   email: string;
