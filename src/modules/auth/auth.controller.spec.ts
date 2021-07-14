@@ -1,10 +1,13 @@
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '../users/entities/user.entity';
 import { Role } from '../workspaces/entities/role.enum';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { RefreshDto } from './dto/refresh.dto';
 import { RegisterDto } from './dto/register.dto';
 import { AuthenticateResponse } from './response/authenticate.response';
+import { RefreshResponse } from './response/refresh.response';
 import { RegisterResponse } from './response/register.response';
 
 describe('AuthController', () => {
@@ -50,6 +53,23 @@ describe('AuthController', () => {
                       name: registerDto.workspaceName,
                     },
                   });
+                },
+              ),
+            refresh: jest
+              .fn()
+              .mockImplementation(
+                (dto: RefreshDto): Promise<RefreshResponse> => {
+                  if (dto.refreshToken === 'validToken') {
+                    return Promise.resolve({
+                      accessToken: 'newAccessToken',
+                      refreshToken: 'newRefreshToken',
+                    });
+                  }
+
+                  throw new HttpException(
+                    'Invalid token',
+                    HttpStatus.BAD_REQUEST,
+                  );
                 },
               ),
           },
@@ -114,6 +134,24 @@ describe('AuthController', () => {
     const actualResult: RegisterResponse = await controller.register(dto);
 
     expect(authService.register).toBeCalled();
+    expect(actualResult).toEqual(expectedResult);
+  });
+
+  it('refresh - should return new access and refresh tokens', async () => {
+    const dto: RefreshDto = {
+      email: 'test@test.net',
+      accessToken: '',
+      refreshToken: 'validToken',
+    };
+
+    const expectedResult: RefreshResponse = {
+      accessToken: 'newAccessToken',
+      refreshToken: 'newRefreshToken',
+    };
+
+    const actualResult: RefreshResponse = await controller.refresh(dto);
+
+    expect(authService.refresh).toBeCalled();
     expect(actualResult).toEqual(expectedResult);
   });
 });

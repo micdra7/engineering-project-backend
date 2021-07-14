@@ -13,6 +13,8 @@ import { HttpException } from '@nestjs/common';
 import { WorkspacesService } from '../workspaces/workspaces.service';
 import { Workspace } from '../workspaces/entities/workspace.entity';
 import { Connection } from 'typeorm';
+import { RefreshDto } from './dto/refresh.dto';
+import { RefreshResponse } from './response/refresh.response';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -97,6 +99,27 @@ describe('AuthService', () => {
             sign: jest.fn().mockImplementation((): Promise<string> => {
               return Promise.resolve('jwt');
             }),
+            verify: jest.fn().mockImplementation(
+              (
+                token: string,
+              ): {
+                email: string;
+                id: number;
+                role: number;
+                wsp: string;
+              } => {
+                if (token === '') {
+                  throw new Error('Invalid token');
+                }
+
+                return {
+                  email: 'test@test.net',
+                  id: 1,
+                  role: 1,
+                  wsp: 'Test Workspace',
+                };
+              },
+            ),
           },
         },
         { provide: ConfigService, useFactory: mockConfigService },
@@ -206,5 +229,93 @@ describe('AuthService', () => {
     expect(async () => {
       await service.register(dto);
     }).rejects.toThrow(HttpException);
+  });
+
+  it('refresh - should throw if token is invalid', async () => {
+    const loginDto: User = {
+      id: 1,
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'test@test.net',
+      passwordHash: 'QWE12345rty$',
+      isActive: true,
+      calls: null,
+      gameResults: null,
+      messages: null,
+      tasks: null,
+      userChatrooms: null,
+      userWorkspaces: null,
+    };
+
+    const loginResult = await service.login(loginDto);
+
+    const dto: RefreshDto = {
+      email: loginDto.email,
+      accessToken: loginResult.accessToken,
+      refreshToken: ``,
+    };
+
+    expect(async () => {
+      await service.refresh(dto);
+    }).rejects.toThrow(HttpException);
+  });
+
+  it('refresh - should throw if user is not found', async () => {
+    const loginDto: User = {
+      id: 1,
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'test@test.net',
+      passwordHash: 'QWE12345rty$',
+      isActive: true,
+      calls: null,
+      gameResults: null,
+      messages: null,
+      tasks: null,
+      userChatrooms: null,
+      userWorkspaces: null,
+    };
+
+    const loginResult = await service.login(loginDto);
+
+    const dto: RefreshDto = {
+      email: `abc123${loginDto.email}`,
+      accessToken: loginResult.accessToken,
+      refreshToken: loginResult.refreshToken,
+    };
+
+    expect(async () => {
+      await service.refresh(dto);
+    }).rejects.toThrow(HttpException);
+  });
+
+  it('refresh - should return new access & refresh tokens on success', async () => {
+    const loginDto: User = {
+      id: 1,
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'test@test.net',
+      passwordHash: 'QWE12345rty$',
+      isActive: true,
+      calls: null,
+      gameResults: null,
+      messages: null,
+      tasks: null,
+      userChatrooms: null,
+      userWorkspaces: null,
+    };
+
+    const loginResult = await service.login(loginDto);
+
+    const dto: RefreshDto = {
+      email: loginDto.email,
+      accessToken: loginResult.accessToken,
+      refreshToken: loginResult.refreshToken,
+    };
+
+    const result: RefreshResponse = await service.refresh(dto);
+
+    expect(result).toHaveProperty('accessToken');
+    expect(result).toHaveProperty('refreshToken');
   });
 });

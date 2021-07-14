@@ -15,6 +15,9 @@ import { Workspace } from '../workspaces/entities/workspace.entity';
 import { UserWorkspaces } from '../workspaces/entities/userWorkspaces.entity';
 import { Role } from '../workspaces/entities/role.enum';
 import { Connection } from 'typeorm';
+import { RefreshDto } from './dto/refresh.dto';
+import { RefreshResponse } from './response/refresh.response';
+import { UserWorkspacesResponse } from '../workspaces/responses/userWorkspaces.response';
 
 @Injectable()
 export class AuthService {
@@ -60,6 +63,48 @@ export class AuthService {
       }),
       workspaces,
     };
+  }
+
+  async refresh(dto: RefreshDto): Promise<RefreshResponse> {
+    try {
+      const user = await this.usersService.findByEmail(dto.email);
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      const decoded = this.jwtService.verify<{
+        email: string;
+        id: number;
+        role: number;
+        wsp: string;
+      }>(dto.refreshToken, { secret: this.configService.get('jwt.secret') });
+
+      const workspaces = await this.usersService.getUserWorkspaces(user.id);
+      const currentWorkspace: UserWorkspacesResponse = workspaces.filter(
+        w => w.workspaceName === decoded.wsp,
+      )[0];
+
+      const payload = {
+        email: dto.email,
+        id: user.id,
+        role: currentWorkspace.role,
+        wsp: currentWorkspace.workspaceName,
+      };
+
+      return {
+        accessToken: this.jwtService.sign(payload, {
+          secret: this.configService.get('jwt.secret'),
+          expiresIn: this.configService.get('jwt.validFor'),
+        }),
+        refreshToken: this.jwtService.sign(payload, {
+          secret: this.configService.get('jwt.secret'),
+          expiresIn: this.configService.get('jwt.refreshValidFor'),
+        }),
+      };
+    } catch (error) {
+      throw new HttpException('Invalid refresh token', HttpStatus.BAD_REQUEST);
+    }
   }
 
   async register(registerDto: RegisterDto): Promise<RegisterResponse> {

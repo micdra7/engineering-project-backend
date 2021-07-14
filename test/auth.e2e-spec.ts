@@ -89,4 +89,39 @@ describe('AuthController (e2e)', () => {
       .send({ email: 'test@test.net', password: 'QWE12345rty$' })
       .expect(200);
   });
+
+  it('/auth/refresh fails for empty refresh token (POST)', () => {
+    return request(app.getHttpServer())
+      .post('/auth/refresh')
+      .send({ accessToken: '', refreshToken: '', email: 'test@test.net' })
+      .expect(400);
+  });
+
+  it('/auth/refresh fails for invalid refresh token (POST)', () => {
+    return request(app.getHttpServer())
+      .post('/auth/refresh')
+      .send({
+        accessToken: '',
+        refreshToken: 'fadsfgwefgasd',
+        email: 'test@test.net',
+      })
+      .expect(400);
+  });
+
+  it('/auth/refresh succeeds for valid refresh token (POST)', async () => {
+    const result = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: 'test@test.net', password: 'QWE12345rty$' });
+
+    const body = result.body;
+
+    return request(app.getHttpServer())
+      .post('/auth/refresh')
+      .send({
+        accessToken: body.accessToken,
+        refreshToken: body.refreshToken,
+        email: 'test@test.net',
+      })
+      .expect(200);
+  });
 });
