@@ -5,6 +5,7 @@ module.exports = {
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: 'engineering-project',
+  keepConnectionAlive: true,
   entities:
     process.env.NODE_ENV === 'test'
       ? ['src/**/*.entity.ts']
