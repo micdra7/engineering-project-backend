@@ -135,8 +135,9 @@ export class AuthService {
       password: registerDto.password,
     };
 
-    const workspace: CreateWorkspaceDto = {
+    const workspace = {
       name: registerDto.workspaceName,
+      isDefault: true,
     };
 
     await this.connection.transaction(async manager => {
