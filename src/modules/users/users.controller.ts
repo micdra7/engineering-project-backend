@@ -38,13 +38,11 @@ export class UsersController {
 
   @Patch('/:id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    console.log('here');
     return this.usersService.update(+id, updateUserDto);
   }
 
   @Patch('/current/profile')
   updateCurrent(@Body() updateUserDto: UpdateUserDto, @Req() req) {
-    console.log('req: ', req);
     return this.usersService.update(+req.user.id, updateUserDto);
   }
 

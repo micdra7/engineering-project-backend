@@ -15,6 +15,7 @@ import { Workspace } from '../workspaces/entities/workspace.entity';
 import { Connection } from 'typeorm';
 import { RefreshDto } from './dto/refresh.dto';
 import { RefreshResponse } from './response/refresh.response';
+import { SwitchWorkspaceDto } from './dto/switch-workspace.dto';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -84,6 +85,12 @@ describe('AuthService', () => {
                         role: Role.Admin,
                         workspaceName: 'Test Workspace',
                         isDefault: true,
+                      },
+                      {
+                        id: 2,
+                        role: Role.User,
+                        workspaceName: 'Test Workspace 2',
+                        isDefault: false,
                       },
                     ]);
                   }
@@ -317,5 +324,160 @@ describe('AuthService', () => {
 
     expect(result).toHaveProperty('accessToken');
     expect(result).toHaveProperty('refreshToken');
+  });
+
+  it('switch - should throw if tokens are invalid', async () => {
+    const loginDto: User = {
+      id: 1,
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'test@test.net',
+      passwordHash: 'QWE12345rty$',
+      isActive: true,
+      calls: null,
+      gameResults: null,
+      messages: null,
+      tasks: null,
+      userChatrooms: null,
+      userWorkspaces: null,
+    };
+
+    const loginResult = await service.login(loginDto);
+    const defaultWorkspace = loginResult.workspaces.filter(w => w.isDefault)[0];
+
+    const dto: SwitchWorkspaceDto = {
+      accessToken: '',
+      refreshToken: '',
+      workspaceName: defaultWorkspace.workspaceName,
+      workspaceId: defaultWorkspace.id,
+    };
+
+    expect(async () => {
+      await service.switchWorkspace(1, dto);
+    }).rejects.toThrow(HttpException);
+  });
+
+  it('switch - should throw if workspace is not found', async () => {
+    const loginDto: User = {
+      id: 1,
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'test@test.net',
+      passwordHash: 'QWE12345rty$',
+      isActive: true,
+      calls: null,
+      gameResults: null,
+      messages: null,
+      tasks: null,
+      userChatrooms: null,
+      userWorkspaces: null,
+    };
+
+    const loginResult = await service.login(loginDto);
+    const defaultWorkspace = loginResult.workspaces.filter(w => w.isDefault)[0];
+
+    const dto: SwitchWorkspaceDto = {
+      accessToken: loginResult.accessToken,
+      refreshToken: loginResult.refreshToken,
+      workspaceName: defaultWorkspace.workspaceName,
+      workspaceId: 0,
+    };
+
+    expect(async () => {
+      await service.switchWorkspace(1, dto);
+    }).rejects.toThrow(HttpException);
+  });
+
+  it('switch - should throw if user does not belong to workspace', async () => {
+    const loginDto: User = {
+      id: 1,
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'test@test.net',
+      passwordHash: 'QWE12345rty$',
+      isActive: true,
+      calls: null,
+      gameResults: null,
+      messages: null,
+      tasks: null,
+      userChatrooms: null,
+      userWorkspaces: null,
+    };
+
+    const loginResult = await service.login(loginDto);
+    const defaultWorkspace = loginResult.workspaces.filter(w => w.isDefault)[0];
+
+    const dto: SwitchWorkspaceDto = {
+      accessToken: loginResult.accessToken,
+      refreshToken: loginResult.refreshToken,
+      workspaceName: defaultWorkspace.workspaceName,
+      workspaceId: 2,
+    };
+
+    expect(async () => {
+      await service.switchWorkspace(1, dto);
+    }).rejects.toThrow(HttpException);
+  });
+
+  it('switch - should throw if user tries to switch to workspace if already in it', async () => {
+    const loginDto: User = {
+      id: 1,
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'test@test.net',
+      passwordHash: 'QWE12345rty$',
+      isActive: true,
+      calls: null,
+      gameResults: null,
+      messages: null,
+      tasks: null,
+      userChatrooms: null,
+      userWorkspaces: null,
+    };
+
+    const loginResult = await service.login(loginDto);
+    const defaultWorkspace = loginResult.workspaces.filter(w => w.isDefault)[0];
+
+    const dto: SwitchWorkspaceDto = {
+      accessToken: loginResult.accessToken,
+      refreshToken: loginResult.refreshToken,
+      workspaceName: defaultWorkspace.workspaceName,
+      workspaceId: defaultWorkspace.id,
+    };
+
+    expect(async () => {
+      await service.switchWorkspace(1, dto);
+    }).rejects.toThrow(HttpException);
+  });
+
+  it('switch - should succeed for valid dto', async () => {
+    const loginDto: User = {
+      id: 1,
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'test@test.net',
+      passwordHash: 'QWE12345rty$',
+      isActive: true,
+      calls: null,
+      gameResults: null,
+      messages: null,
+      tasks: null,
+      userChatrooms: null,
+      userWorkspaces: null,
+    };
+
+    const loginResult = await service.login(loginDto);
+
+    const dto: SwitchWorkspaceDto = {
+      accessToken: loginResult.accessToken,
+      refreshToken: loginResult.refreshToken,
+      workspaceName: loginResult.workspaces.filter(w => !w.isDefault)[0]
+        .workspaceName,
+      workspaceId: loginResult.workspaces.filter(w => !w.isDefault)[0].id,
+    };
+
+    expect(async () => {
+      await service.switchWorkspace(1, dto);
+    }).rejects.toThrow(HttpException);
   });
 });

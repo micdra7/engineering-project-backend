@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { AuthLoginDto } from './dto/auth-login.dto';
@@ -18,6 +23,7 @@ import { Connection } from 'typeorm';
 import { RefreshDto } from './dto/refresh.dto';
 import { RefreshResponse } from './response/refresh.response';
 import { UserWorkspacesResponse } from '../workspaces/responses/userWorkspaces.response';
+import { SwitchWorkspaceDto } from './dto/switch-workspace.dto';
 
 @Injectable()
 export class AuthService {
@@ -104,6 +110,70 @@ export class AuthService {
       };
     } catch (error) {
       throw new HttpException('Invalid refresh token', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async switchWorkspace(
+    userId: number,
+    dto: SwitchWorkspaceDto,
+  ): Promise<RefreshResponse> {
+    try {
+      const user = await this.usersService.findOne(userId);
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      const accessTokenPayload = this.jwtService.verify<{
+        email: string;
+        id: number;
+        role: number;
+        wsp: string;
+      }>(dto.accessToken, { secret: this.configService.get('jwt.secret') });
+
+      this.jwtService.verify<{
+        email: string;
+        id: number;
+        role: number;
+        wsp: string;
+      }>(dto.refreshToken, { secret: this.configService.get('jwt.secret') });
+
+      const userWorkspaces = await this.usersService.getUserWorkspaces(userId);
+
+      if (accessTokenPayload.wsp === dto.workspaceName) {
+        throw new BadRequestException(
+          'Users cannot switch into workspace they are currently in',
+        );
+      }
+
+      if (!userWorkspaces.some(w => w.id === dto.workspaceId)) {
+        throw new BadRequestException(
+          'User does not belong to given workspace',
+        );
+      }
+
+      const currentWorkspace = userWorkspaces.filter(
+        w => w.id === dto.workspaceId,
+      )[0];
+
+      const payload = {
+        email: user.email,
+        id: user.id,
+        role: currentWorkspace.role,
+        wsp: currentWorkspace.workspaceName,
+      };
+
+      return {
+        accessToken: this.jwtService.sign(payload, {
+          secret: this.configService.get('jwt.secret'),
+          expiresIn: this.configService.get('jwt.validFor'),
+        }),
+        refreshToken: this.jwtService.sign(payload, {
+          secret: this.configService.get('jwt.secret'),
+          expiresIn: this.configService.get('jwt.refreshValidFor'),
+        }),
+      };
+    } catch (error) {
+      throw new BadRequestException(error.message ?? 'Invalid tokens');
     }
   }
 

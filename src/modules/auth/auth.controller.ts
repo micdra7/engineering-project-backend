@@ -15,6 +15,7 @@ import { AuthenticateResponse } from './response/authenticate.response';
 import { RegisterResponse } from './response/register.response';
 import { RefreshDto } from './dto/refresh.dto';
 import { RefreshResponse } from './response/refresh.response';
+import { SwitchWorkspaceDto } from './dto/switch-workspace.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -39,5 +40,15 @@ export class AuthController {
   @Public()
   async refresh(@Body() refreshDto: RefreshDto): Promise<RefreshResponse> {
     return this.authService.refresh(refreshDto);
+  }
+
+  @Post('/switch')
+  @HttpCode(HttpStatus.OK)
+  @Public()
+  async switchWorkspace(
+    @Request() req,
+    @Body() dto: SwitchWorkspaceDto,
+  ): Promise<RefreshResponse> {
+    return this.authService.switchWorkspace(req.user.id, dto);
   }
 }
