@@ -7,6 +7,9 @@ import {
   Param,
   Delete,
   Req,
+  Query,
+  DefaultValuePipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -22,8 +25,19 @@ export class UsersController {
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAll(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
+    @Req() req,
+  ) {
+    return this.usersService.getAllWithPagination(
+      req.user.id,
+      req.user.workspaceName,
+      {
+        page,
+        limit,
+      },
+    );
   }
 
   @Get('/current/profile')
