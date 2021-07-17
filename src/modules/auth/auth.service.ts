@@ -93,7 +93,7 @@ export class AuthService {
 
       const payload = {
         email: dto.email,
-        id: user.id,
+        sub: user.id,
         role: currentWorkspace.role,
         wsp: currentWorkspace.workspaceName,
       };
@@ -157,7 +157,7 @@ export class AuthService {
 
       const payload = {
         email: user.email,
-        id: user.id,
+        sub: user.id,
         role: currentWorkspace.role,
         wsp: currentWorkspace.workspaceName,
       };
