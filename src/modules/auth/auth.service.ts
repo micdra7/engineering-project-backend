@@ -137,13 +137,13 @@ export class AuthService {
         wsp: string;
       }>(dto.refreshToken, { secret: this.configService.get('jwt.secret') });
 
-      const userWorkspaces = await this.usersService.getUserWorkspaces(userId);
-
       if (accessTokenPayload.wsp === dto.workspaceName) {
         throw new BadRequestException(
           'Users cannot switch into workspace they are currently in',
         );
       }
+
+      const userWorkspaces = await this.usersService.getUserWorkspaces(userId);
 
       if (!userWorkspaces.some(w => w.id === dto.workspaceId)) {
         throw new BadRequestException(

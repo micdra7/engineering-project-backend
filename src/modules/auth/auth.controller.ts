@@ -44,11 +44,10 @@ export class AuthController {
 
   @Post('/switch')
   @HttpCode(HttpStatus.OK)
-  @Public()
   async switchWorkspace(
     @Request() req,
     @Body() dto: SwitchWorkspaceDto,
   ): Promise<RefreshResponse> {
-    return this.authService.switchWorkspace(req.user.id, dto);
+    return this.authService.switchWorkspace(+req.user.id, dto);
   }
 }

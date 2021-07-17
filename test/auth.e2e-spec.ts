@@ -188,6 +188,6 @@ describe('AuthController (e2e)', () => {
         workspaceName: 'Test Workspace 2',
         workspaceId: 9,
       })
-      .expect(400);
+      .expect(200);
   });
 });
