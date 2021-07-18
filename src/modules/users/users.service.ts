@@ -9,11 +9,6 @@ import { User } from './entities/user.entity';
 import { UserWorkspacesResponse } from '../workspaces/responses/userWorkspaces.response';
 import { UpdateUserResponse } from './response/update-user.response';
 import * as bcrypt from 'bcrypt';
-import {
-  IPaginationOptions,
-  paginate,
-  Pagination,
-} from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class UsersService {
@@ -108,24 +103,6 @@ export class UsersService {
         workspaceName: uw.workspace.name,
         isDefault: uw.workspace.isDefault,
       };
-    });
-  }
-
-  async getAllWithPagination(
-    userId: number,
-    workspaceName: string,
-    options: IPaginationOptions,
-  ): Promise<Pagination<User>> {
-    return paginate<User>(this.userRepository, options, {
-      join: {
-        alias: 'user',
-        innerJoin: { userWorkspaces: 'user.userWorkspaces' },
-      },
-      where: qb => {
-        qb.where().andWhere('userWorkspaces.workspaceName = :workspaceName', {
-          workspaceName,
-        });
-      },
     });
   }
 }
