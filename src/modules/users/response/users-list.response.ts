@@ -4,4 +4,5 @@ export class UsersListResponse {
   lastName: string;
   email: string;
   isActive: boolean;
+  role: number;
 }

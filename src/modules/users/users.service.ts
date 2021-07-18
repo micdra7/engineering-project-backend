@@ -116,8 +116,8 @@ export class UsersService {
     console.log(workspaceName);
     const [items, count] = await this.userRepository
       .createQueryBuilder('user')
-      .innerJoin('user.userWorkspaces', 'userWorkspaces')
-      .innerJoin('userWorkspaces.workspace', 'workspace')
+      .innerJoinAndSelect('user.userWorkspaces', 'userWorkspaces')
+      .innerJoinAndSelect('userWorkspaces.workspace', 'workspace')
       .where('workspace.name = :workspaceName', {
         workspaceName,
       })
@@ -137,6 +137,9 @@ export class UsersService {
         firstName: val.firstName,
         lastName: val.lastName,
         isActive: val.isActive,
+        role: val.userWorkspaces.filter(
+          w => w.workspace.name === workspaceName,
+        )[0].role,
       })),
       meta,
     };
