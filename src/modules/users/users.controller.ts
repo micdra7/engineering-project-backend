@@ -10,12 +10,16 @@ import {
   Query,
   DefaultValuePipe,
   ParseIntPipe,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationResponse } from 'src/utils/pagination.response';
 import { UsersListResponse } from './response/users-list.response';
+import { FindByEmailDto } from './dto/find-by-email.dto';
+import { User } from './entities/user.entity';
 
 @Controller('users')
 export class UsersController {
@@ -47,6 +51,12 @@ export class UsersController {
   @Get('/:id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
+  }
+
+  @Post('/find-by-email')
+  @HttpCode(HttpStatus.OK)
+  checkIfUsersExists(@Body() dto: FindByEmailDto): Promise<User> {
+    return this.usersService.findByEmail(dto.email);
   }
 
   @Patch('/:id')

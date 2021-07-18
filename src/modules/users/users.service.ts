@@ -120,6 +120,8 @@ export class UsersService {
       .where('workspace.name = :workspaceName', {
         workspaceName,
       })
+      .skip((page - 1) * limit)
+      .take(limit)
       .getManyAndCount();
 
     const meta = {
