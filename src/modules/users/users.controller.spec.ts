@@ -1,9 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { PaginationResponse } from '../../utils/pagination.response';
 import { Workspace } from '../workspaces/entities/workspace.entity';
 import { WorkspacesService } from '../workspaces/workspaces.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { UpdateUserResponse } from './response/update-user.response';
+import { UsersListResponse } from './response/users-list.response';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 

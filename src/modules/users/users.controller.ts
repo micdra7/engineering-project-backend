@@ -14,6 +14,8 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { PaginationResponse } from 'src/utils/pagination.response';
+import { UsersListResponse } from './response/users-list.response';
 
 @Controller('users')
 export class UsersController {
@@ -24,21 +26,18 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  // @Get()
-  // findAll(
-  //   @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-  //   @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
-  //   @Req() req,
-  // ) {
-  //   return this.usersService.getAllWithPagination(
-  //     req.user.id,
-  //     req.user.workspaceName,
-  //     {
-  //       page,
-  //       limit,
-  //     },
-  //   );
-  // }
+  @Get()
+  async findAll(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
+    @Req() req,
+  ): Promise<PaginationResponse<UsersListResponse>> {
+    return this.usersService.getAllWithPagination(
+      req.user.workspaceName,
+      page,
+      limit,
+    );
+  }
 
   @Get('/current/profile')
   findCurrent(@Req() req) {

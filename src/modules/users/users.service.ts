@@ -9,6 +9,8 @@ import { User } from './entities/user.entity';
 import { UserWorkspacesResponse } from '../workspaces/responses/userWorkspaces.response';
 import { UpdateUserResponse } from './response/update-user.response';
 import * as bcrypt from 'bcrypt';
+import { PaginationResponse } from 'src/utils/pagination.response';
+import { UsersListResponse } from './response/users-list.response';
 
 @Injectable()
 export class UsersService {
@@ -104,5 +106,39 @@ export class UsersService {
         isDefault: uw.workspace.isDefault,
       };
     });
+  }
+
+  async getAllWithPagination(
+    workspaceName: string,
+    page: number,
+    limit: number,
+  ): Promise<PaginationResponse<UsersListResponse>> {
+    console.log(workspaceName);
+    const [items, count] = await this.userRepository
+      .createQueryBuilder('user')
+      .innerJoin('user.userWorkspaces', 'userWorkspaces')
+      .innerJoin('userWorkspaces.workspace', 'workspace')
+      .where('workspace.name = :workspaceName', {
+        workspaceName,
+      })
+      .getManyAndCount();
+
+    const meta = {
+      currentPage: page,
+      itemCount: limit,
+      totalPages: Math.ceil(count / limit),
+      totalItems: count,
+    };
+
+    return {
+      data: items.map(val => ({
+        id: val.id,
+        email: val.email,
+        firstName: val.firstName,
+        lastName: val.lastName,
+        isActive: val.isActive,
+      })),
+      meta,
+    };
   }
 }
