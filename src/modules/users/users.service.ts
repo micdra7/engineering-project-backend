@@ -113,7 +113,6 @@ export class UsersService {
     page: number,
     limit: number,
   ): Promise<PaginationResponse<UsersListResponse>> {
-    console.log(workspaceName);
     const [items, count] = await this.userRepository
       .createQueryBuilder('user')
       .innerJoinAndSelect('user.userWorkspaces', 'userWorkspaces')
