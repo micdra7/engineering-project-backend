@@ -49,8 +49,8 @@ export class UsersController {
   }
 
   @Get('/:id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  findOne(@Param('id') id: string, @Req() req) {
+    return this.usersService.findOneInWorkspace(+id, req.user.workspaceName);
   }
 
   @Post('/find-by-email')
@@ -60,8 +60,12 @@ export class UsersController {
   }
 
   @Patch('/:id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @Req() req,
+  ) {
+    return this.usersService.update(+id, updateUserDto, req.user.workspaceName);
   }
 
   @Patch('/current/profile')

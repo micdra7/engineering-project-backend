@@ -12,4 +12,6 @@ export class UpdateUserDto {
   lastName: string;
 
   password?: string;
+
+  role?: number;
 }

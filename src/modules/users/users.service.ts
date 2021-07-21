@@ -11,6 +11,7 @@ import { UpdateUserResponse } from './response/update-user.response';
 import * as bcrypt from 'bcrypt';
 import { PaginationResponse } from 'src/utils/pagination.response';
 import { UsersListResponse } from './response/users-list.response';
+import { Role } from '../workspaces/entities/role.enum';
 
 @Injectable()
 export class UsersService {
@@ -33,9 +34,28 @@ export class UsersService {
     return this.userRepository.findOne(id);
   }
 
+  async findOneInWorkspace(
+    id: number,
+    workspaceName: string,
+  ): Promise<UsersListResponse> {
+    const user = await this.userRepository.findOne(id);
+
+    return {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      isActive: user.isActive,
+      role: (await this.getUserWorkspaces(id)).filter(
+        w => w.workspaceName === workspaceName,
+      )[0].role,
+    };
+  }
+
   async update(
     id: number,
     updateUserDto: UpdateUserDto,
+    workspaceName?: string,
   ): Promise<UpdateUserResponse> {
     const user = await this.userRepository.findOne(id);
 
@@ -74,6 +94,24 @@ export class UsersService {
     }
 
     this.userRepository.update({ id }, updatedUser);
+
+    if (
+      !!workspaceName &&
+      (updateUserDto.role === 0 || updateUserDto.role === 1)
+    ) {
+      const userWorkspaces = await this.getUserWorkspaces(id);
+      const currentWorkspace = userWorkspaces.filter(
+        w => w.workspaceName === workspaceName,
+      )[0];
+
+      const userWorkspaceEntry = await this.userWorkspacesRepository.findOne({
+        where: { workspaceId: currentWorkspace.id, userId: id },
+      });
+
+      this.userWorkspacesRepository.update(userWorkspaceEntry.id, {
+        role: updateUserDto.role as Role,
+      });
+    }
 
     return {
       id,
@@ -120,6 +158,7 @@ export class UsersService {
       .where('workspace.name = :workspaceName', {
         workspaceName,
       })
+      .orderBy('user.id', 'ASC')
       .skip((page - 1) * limit)
       .take(limit)
       .getManyAndCount();
