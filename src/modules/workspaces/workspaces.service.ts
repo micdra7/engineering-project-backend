@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
@@ -39,12 +39,17 @@ export class WorkspacesService {
     dto: AddToWorkspaceDto,
   ): Promise<UpdateUserResponse> {
     const user = await this.userRepository.findOne({
+      relations: ['userWorkspaces'],
       where: { email: dto.email },
     });
     const workspace = await this.workspaceRepository.findOne({
       where: { name: workspaceName },
       relations: ['userWorkspaces'],
     });
+
+    if (user.userWorkspaces.some(uw => uw.workspaceId === workspace.id)) {
+      throw new BadRequestException('User already belongs to this workspace');
+    }
 
     const userWorkspaceEntity = this.userWorkspacesRepository.create({
       role: dto.role,
