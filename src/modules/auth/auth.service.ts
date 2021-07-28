@@ -15,7 +15,6 @@ import { RegisterDto } from './dto/register.dto';
 import { RegisterResponse } from './response/register.response';
 import { WorkspacesService } from '../workspaces/workspaces.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
-import { CreateWorkspaceDto } from '../workspaces/dto/create-workspace.dto';
 import { Workspace } from '../workspaces/entities/workspace.entity';
 import { UserWorkspaces } from '../workspaces/entities/userWorkspaces.entity';
 import { Role } from '../workspaces/entities/role.enum';
