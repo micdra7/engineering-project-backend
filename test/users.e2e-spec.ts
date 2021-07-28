@@ -151,4 +151,45 @@ describe('UsersController (e2e)', () => {
       .send({ ...body, firstName: 'Mike' })
       .expect(200);
   });
+
+  it('/users successfully returns first 10 (or max) records if no pagination params are specified', async () => {
+    return request(app.getHttpServer())
+      .get(`/users`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200)
+      .expect(
+        response =>
+          (response.body.data.length === 10 ||
+            response.body.data.length === response.body.meta.totalItems) &&
+          response.body.meta.currentPage === 1,
+      );
+  });
+
+  it('/users successfully returns randomly selected number of (or max) records if only limit is specified', async () => {
+    const limit = Math.ceil(Math.random() * 100 + 10);
+
+    return request(app.getHttpServer())
+      .get(`/users?limit=${limit}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200)
+      .expect(
+        response =>
+          (response.body.data.length === limit ||
+            response.body.data.length === response.body.meta.totalItems) &&
+          response.body.meta.currentPage === 1,
+      );
+  });
+
+  it('/users successfully returns 1 item from 2nd page', async () => {
+    return request(app.getHttpServer())
+      .get('/users?page=2&limit=1')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200)
+      .expect(
+        response =>
+          (response.body.data.length === 1 ||
+            response.body.data.length === response.body.meta.totalItems) &&
+          response.body.meta.currentPage === 2,
+      );
+  });
 });

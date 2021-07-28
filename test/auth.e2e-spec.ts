@@ -124,4 +124,70 @@ describe('AuthController (e2e)', () => {
       })
       .expect(200);
   });
+
+  it('/auth/switch fails for empty body (POST)', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: 'test@test.net', password: 'QWE12345rty$' });
+    const token = response.body.accessToken;
+
+    return request(app.getHttpServer())
+      .post('/auth/switch')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(400);
+  });
+
+  it('/auth/switch fails dto validation (POST)', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: 'test@test.net', password: 'QWE12345rty$' });
+    const token = response.body.accessToken;
+
+    return request(app.getHttpServer())
+      .post('/auth/switch')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        accessToken: '',
+        refreshToken: '',
+        workspaceName: '',
+        workspaceId: 0,
+      })
+      .expect(400);
+  });
+
+  it('/auth/switch fails if user does not belong to workspace (POST)', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: 'test@test.net', password: 'QWE12345rty$' });
+    const token = response.body.accessToken;
+
+    return request(app.getHttpServer())
+      .post('/auth/switch')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        accessToken: token,
+        refreshToken: response.body.refreshToken,
+        workspaceName: 'Test1.1636515370452294 Workspace',
+        workspaceId: 3,
+      })
+      .expect(400);
+  });
+
+  it('/auth/switch succeeds for valid DTO (POST)', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: 'test@test.net', password: 'QWE12345rty$' });
+    const token = response.body.accessToken;
+
+    return request(app.getHttpServer())
+      .post('/auth/switch')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        accessToken: token,
+        refreshToken: response.body.refreshToken,
+        workspaceName: 'Test Workspace 2',
+        workspaceId: 9,
+      })
+      .expect(200);
+  });
 });

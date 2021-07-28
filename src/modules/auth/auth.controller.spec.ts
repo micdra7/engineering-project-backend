@@ -6,6 +6,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { RefreshDto } from './dto/refresh.dto';
 import { RegisterDto } from './dto/register.dto';
+import { SwitchWorkspaceDto } from './dto/switch-workspace.dto';
 import { AuthenticateResponse } from './response/authenticate.response';
 import { RefreshResponse } from './response/refresh.response';
 import { RegisterResponse } from './response/register.response';
@@ -70,6 +71,19 @@ describe('AuthController', () => {
                     'Invalid token',
                     HttpStatus.BAD_REQUEST,
                   );
+                },
+              ),
+            switchWorkspace: jest
+              .fn()
+              .mockImplementation(
+                (
+                  userId: number,
+                  dto: SwitchWorkspaceDto,
+                ): Promise<RefreshResponse> => {
+                  return Promise.resolve({
+                    accessToken: 'newAccessToken',
+                    refreshToken: 'newRefreshToken',
+                  });
                 },
               ),
           },
@@ -152,6 +166,28 @@ describe('AuthController', () => {
     const actualResult: RefreshResponse = await controller.refresh(dto);
 
     expect(authService.refresh).toBeCalled();
+    expect(actualResult).toEqual(expectedResult);
+  });
+
+  it('switch - should return new access and refresh tokens for new workspace', async () => {
+    const dto: SwitchWorkspaceDto = {
+      accessToken: 'validAccessToken',
+      refreshToken: 'validRefreshToken',
+      workspaceId: 1,
+      workspaceName: 'Test Workspace',
+    };
+
+    const expectedResult: RefreshResponse = {
+      accessToken: 'newAccessToken',
+      refreshToken: 'newRefreshToken',
+    };
+
+    const actualResult: RefreshResponse = await controller.switchWorkspace(
+      { user: { id: 1 } },
+      dto,
+    );
+
+    expect(authService.switchWorkspace).toBeCalled();
     expect(actualResult).toEqual(expectedResult);
   });
 });

@@ -34,10 +34,10 @@ export class User {
   isActive: boolean;
 
   @OneToMany(() => UserWorkspaces, userWorkspaces => userWorkspaces.user)
-  userWorkspaces!: UserWorkspaces[];
+  userWorkspaces: UserWorkspaces[];
 
   @OneToMany(() => UserChatrooms, userChatrooms => userChatrooms.user)
-  userChatrooms!: UserChatrooms;
+  userChatrooms: UserChatrooms;
 
   @OneToMany(() => GameResult, gameResult => gameResult.user)
   gameResults: GameResult[];
