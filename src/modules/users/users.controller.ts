@@ -20,6 +20,7 @@ import { PaginationResponse } from 'src/utils/pagination.response';
 import { UsersListResponse } from './response/users-list.response';
 import { FindByEmailDto } from './dto/find-by-email.dto';
 import { User } from './entities/user.entity';
+import { ChangeStatusDto } from './dto/change-status.dto';
 
 @Controller('users')
 export class UsersController {
@@ -76,5 +77,10 @@ export class UsersController {
   @Delete('/:id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
+  }
+
+  @Patch('/:id/change-status')
+  async changeStatus(@Body() dto: ChangeStatusDto) {
+    return this.usersService.changeStatus(dto);
   }
 }

@@ -27,7 +27,6 @@ export class WorkspacesController {
   @Post('/add-user')
   @HttpCode(HttpStatus.OK)
   async addUserToWorkspace(@Req() req, @Body() dto: AddToWorkspaceDto) {
-    console.log('req: ', req.user, dto);
     return this.workspacesService.addUserToWorkspace(
       req.user.workspaceName,
       dto,

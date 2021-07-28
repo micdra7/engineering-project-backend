@@ -12,6 +12,7 @@ import * as bcrypt from 'bcrypt';
 import { PaginationResponse } from 'src/utils/pagination.response';
 import { UsersListResponse } from './response/users-list.response';
 import { Role } from '../workspaces/entities/role.enum';
+import { ChangeStatusDto } from './dto/change-status.dto';
 
 @Injectable()
 export class UsersService {
@@ -182,6 +183,22 @@ export class UsersService {
         )[0].role,
       })),
       meta,
+    };
+  }
+
+  async changeStatus(dto: ChangeStatusDto): Promise<UsersListResponse> {
+    const user = await this.findByEmail(dto.email);
+
+    user.isActive = dto.status;
+    this.userRepository.save(user);
+
+    return {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      isActive: dto.status,
+      role: dto.role,
     };
   }
 }
