@@ -57,6 +57,12 @@ export class AuthService {
       wsp: defaultWorkspace.workspaceName,
     };
 
+    const dbUser = await this.usersService.findByEmail(user.email);
+
+    if (!dbUser.isActive) {
+      throw new BadRequestException('Your account is inactive');
+    }
+
     return {
       accessToken: this.jwtService.sign(payload, {
         secret: this.configService.get('jwt.secret'),
