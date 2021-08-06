@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   HttpCode,
+  HttpException,
   HttpStatus,
   Post,
   Request,
@@ -17,7 +18,9 @@ import { RefreshDto } from './dto/refresh.dto';
 import { RefreshResponse } from './response/refresh.response';
 import { SwitchWorkspaceDto } from './dto/switch-workspace.dto';
 import {
+  ApiBadRequestResponse,
   ApiBody,
+  ApiCreatedResponse,
   ApiOkResponse,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -36,7 +39,10 @@ export class AuthController {
     type: AuthenticateResponse,
   })
   @ApiUnauthorizedResponse({
-    description: 'Invalid credentials',
+    description: 'User has entered invalid credentials',
+  })
+  @ApiBadRequestResponse({
+    description: "User's account is inactive",
   })
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuard)
@@ -46,12 +52,26 @@ export class AuthController {
   }
 
   @Post('/register')
+  @ApiCreatedResponse({
+    description: 'User has successfully registered',
+    type: RegisterResponse,
+  })
+  @ApiBadRequestResponse({
+    description: 'Email or workspace name is already in use',
+  })
   @Public()
   async register(@Body() registerDto: RegisterDto): Promise<RegisterResponse> {
     return this.authService.register(registerDto);
   }
 
   @Post('/refresh')
+  @ApiOkResponse({
+    description: 'Token successfully refreshed',
+    type: RefreshResponse,
+  })
+  @ApiBadRequestResponse({
+    description: 'Invalid token',
+  })
   @HttpCode(HttpStatus.OK)
   @Public()
   async refresh(@Body() refreshDto: RefreshDto): Promise<RefreshResponse> {
@@ -59,6 +79,13 @@ export class AuthController {
   }
 
   @Post('/switch')
+  @ApiOkResponse({
+    description: 'Workspace successfully switched',
+    type: RefreshResponse,
+  })
+  @ApiBadRequestResponse({
+    description: 'User not found or trying to switch into current workspace',
+  })
   @HttpCode(HttpStatus.OK)
   async switchWorkspace(
     @Request() req,
