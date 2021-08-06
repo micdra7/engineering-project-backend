@@ -9,7 +9,7 @@ import { User } from './entities/user.entity';
 import { UserWorkspacesResponse } from '../workspaces/responses/userWorkspaces.response';
 import { UpdateUserResponse } from './response/update-user.response';
 import * as bcrypt from 'bcrypt';
-import { PaginationResponse } from 'src/utils/pagination.response';
+import { PaginationResponse } from '../../utils/pagination.response';
 import { UsersListResponse } from './response/users-list.response';
 import { Role } from '../workspaces/entities/role.enum';
 import { ChangeStatusDto } from './dto/change-status.dto';
