@@ -16,7 +16,13 @@ import { RegisterResponse } from './response/register.response';
 import { RefreshDto } from './dto/refresh.dto';
 import { RefreshResponse } from './response/refresh.response';
 import { SwitchWorkspaceDto } from './dto/switch-workspace.dto';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOkResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { AuthLoginDto } from './dto/auth-login.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -24,6 +30,14 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('/login')
+  @ApiBody({ type: AuthLoginDto })
+  @ApiOkResponse({
+    description: 'User has successfully logged in',
+    type: AuthenticateResponse,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Invalid credentials',
+  })
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuard)
   @Public()
