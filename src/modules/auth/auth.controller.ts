@@ -16,7 +16,9 @@ import { RegisterResponse } from './response/register.response';
 import { RefreshDto } from './dto/refresh.dto';
 import { RefreshResponse } from './response/refresh.response';
 import { SwitchWorkspaceDto } from './dto/switch-workspace.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}

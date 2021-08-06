@@ -7,10 +7,12 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ChatroomsService } from './chatrooms.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 
+@ApiTags('Chatrooms')
 @Controller('chatrooms')
 export class ChatroomsController {
   constructor(private readonly chatroomsService: ChatroomsService) {}

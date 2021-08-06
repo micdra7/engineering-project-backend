@@ -21,7 +21,9 @@ import { UsersListResponse } from './response/users-list.response';
 import { FindByEmailDto } from './dto/find-by-email.dto';
 import { User } from './entities/user.entity';
 import { ChangeStatusDto } from './dto/change-status.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
