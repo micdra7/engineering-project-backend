@@ -110,27 +110,31 @@ describe('UsersService', () => {
     expect(service).toBeDefined();
   });
 
-  it('update - fails for unknown id', () => {
+  it('update - fails for unknown id', async () => {
     const dto: UpdateUserDto = {
       email: `test${Math.random() * 200 + 100}@test.net`,
       firstName: 'Mike',
       lastName: 'Smith',
     };
 
-    expect(async () => {
-      await service.update(-1, dto);
+    await expect(async () => {
+      await service.update(-1, dto).catch(err => {
+        throw err;
+      });
     }).rejects.toThrow(HttpException);
   });
 
-  it('update - fails for taken email', () => {
+  it('update - fails for taken email', async () => {
     const dto: UpdateUserDto = {
       email: 'test1@test.net',
       firstName: 'Mike',
       lastName: 'Smith',
     };
 
-    expect(async () => {
-      await service.update(1, dto);
+    await expect(async () => {
+      await service.update(1, dto).catch(err => {
+        throw err;
+      });
     }).rejects.toThrow(HttpException);
   });
 
