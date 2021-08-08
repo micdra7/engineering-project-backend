@@ -14,7 +14,9 @@ import { WorkspacesService } from './workspaces.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
 import { AddToWorkspaceDto } from './dto/add-to-workspace.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Workspaces')
 @Controller('workspaces')
 export class WorkspacesController {
   constructor(private readonly workspacesService: WorkspacesService) {}
