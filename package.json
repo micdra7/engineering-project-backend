@@ -83,8 +83,9 @@
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s",
-      "!**/*.(dto|response|guard|strategy|module).(t|j)s",
-      "!**/main.ts"
+      "!**/*.(dto|response|guard|strategy|module|decorator|entity|enum).(t|j)s",
+      "!**/main.ts",
+      "!**/configuration.ts"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"

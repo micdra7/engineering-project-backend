@@ -2,8 +2,9 @@ import { HttpException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Connection, Repository } from 'typeorm';
+import { Connection } from 'typeorm';
 import { UserWorkspaces } from '../workspaces/entities/userWorkspaces.entity';
+import { Workspace } from '../workspaces/entities/workspace.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { UpdateUserResponse } from './response/update-user.response';
@@ -11,6 +12,7 @@ import { UsersService } from './users.service';
 
 describe('UsersService', () => {
   let service: UsersService;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let connection: Connection;
   const mockManager = {
     create: jest.fn().mockReturnValue({}),
@@ -88,6 +90,12 @@ describe('UsersService', () => {
           provide: getRepositoryToken(UserWorkspaces),
           useValue: {
             find: jest.fn().mockImplementation(() => []),
+          },
+        },
+        {
+          provide: getRepositoryToken(Workspace),
+          useValue: {
+            findOne: jest.fn().mockImplementation(() => ({})),
           },
         },
         { provide: Connection, useFactory: mockConnection },

@@ -1,11 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PaginationResponse } from '../../utils/pagination.response';
 import { Workspace } from '../workspaces/entities/workspace.entity';
 import { WorkspacesService } from '../workspaces/workspaces.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { UpdateUserResponse } from './response/update-user.response';
-import { UsersListResponse } from './response/users-list.response';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
@@ -43,26 +41,25 @@ describe('UsersController', () => {
 
                 return Promise.resolve(undefined);
               }),
-            update: jest
-              .fn()
-              .mockImplementation(
-                (
-                  id: number,
-                  dto: UpdateUserDto,
-                ): Promise<UpdateUserResponse> => {
-                  if (id === 1) {
-                    return Promise.resolve({
-                      id: 1,
-                      email: 'test@test.net',
-                      firstName: 'Mike',
-                      lastName: 'Smith',
-                      workspaces: null,
-                    });
-                  }
+            update: jest.fn().mockImplementation(
+              (
+                id: number,
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                dto: UpdateUserDto,
+              ): Promise<UpdateUserResponse> => {
+                if (id === 1) {
+                  return Promise.resolve({
+                    id: 1,
+                    email: 'test@test.net',
+                    firstName: 'Mike',
+                    lastName: 'Smith',
+                    workspaces: null,
+                  });
+                }
 
-                  throw new Error();
-                },
-              ),
+                throw new Error();
+              },
+            ),
           },
         },
         {
@@ -112,7 +109,9 @@ describe('UsersController', () => {
       workspaces: null,
     };
 
-    const result: UpdateUserResponse = await controller.update('1', dto);
+    const result: UpdateUserResponse = await controller.update('1', dto, {
+      user: { workspaceName: '' },
+    });
 
     expect(usersService.update).toBeCalled();
     expect(result).toStrictEqual(expected);
