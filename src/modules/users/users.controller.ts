@@ -27,9 +27,8 @@ import {
   ApiExtraModels,
   ApiOkResponse,
   ApiTags,
-  getSchemaPath,
 } from '@nestjs/swagger';
-import { ApiPaginatedResponse } from 'src/utils/pagination.decorator';
+import { ApiPaginatedResponse } from '../../utils/pagination.decorator';
 import { UpdateUserResponse } from './response/update-user.response';
 
 @ApiTags('Users')

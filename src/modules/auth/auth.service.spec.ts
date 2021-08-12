@@ -70,6 +70,22 @@ describe('AuthService', () => {
                     userChatrooms: null,
                     userWorkspaces: null,
                   });
+                } else if (email === 'test1@test.net') {
+                  return Promise.resolve({
+                    id: 2,
+                    firstName: 'Jane',
+                    lastName: 'Smith',
+                    email: 'test1@test.net',
+                    passwordHash:
+                      '$2b$10$5pH0h0KHCSE5Yt0dx6mXRO5l1PgTLNdaxjPwPriRQeMjACdRKq47e',
+                    isActive: false,
+                    calls: null,
+                    gameResults: null,
+                    messages: null,
+                    tasks: null,
+                    userChatrooms: null,
+                    userWorkspaces: null,
+                  });
                 }
 
                 return Promise.resolve(null);
@@ -91,6 +107,15 @@ describe('AuthService', () => {
                         role: Role.User,
                         workspaceName: 'Test Workspace 2',
                         isDefault: false,
+                      },
+                    ]);
+                  } else if (userId === 2) {
+                    return Promise.resolve([
+                      {
+                        id: 2,
+                        role: Role.Admin,
+                        workspaceName: 'Test1 Workspace',
+                        isDefault: true,
                       },
                     ]);
                   }
@@ -140,6 +165,15 @@ describe('AuthService', () => {
                   return Promise.resolve({
                     id: 1,
                     name: 'Test Workspace',
+                    isDefault: true,
+                    games: null,
+                    taskLists: null,
+                    userWorkspaces: null,
+                  });
+                } else if (name === 'Test1 Workspace') {
+                  return Promise.resolve({
+                    id: 2,
+                    name: 'Test1 Workspace',
                     isDefault: true,
                     games: null,
                     taskLists: null,
@@ -208,9 +242,32 @@ describe('AuthService', () => {
     expect(result.workspaces.length).toBeGreaterThanOrEqual(1);
   });
 
+  it('login - should fail if account is inactive', async () => {
+    const dto: User = {
+      id: 2,
+      firstName: 'Jane',
+      lastName: 'Smith',
+      email: 'test1@test.net',
+      passwordHash: 'QWE12345rty$',
+      isActive: true,
+      calls: null,
+      gameResults: null,
+      messages: null,
+      tasks: null,
+      userChatrooms: null,
+      userWorkspaces: null,
+    };
+
+    expect(async () => {
+      await service.login(dto).catch(err => {
+        throw err;
+      });
+    }).rejects.toThrow(HttpException);
+  });
+
   it('register - should create and assign user to workspace', async () => {
     const dto: RegisterDto = {
-      email: 'test1@test.net',
+      email: 'test2@test.net',
       firstName: 'John',
       lastName: 'Doe',
       password: 'MyVerySecretPassword123$',

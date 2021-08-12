@@ -4,7 +4,10 @@ module.exports = {
   port: process.env.DB_PORT,
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  database: 'engineering-project',
+  database:
+    process.env.NODE_ENV !== 'test'
+      ? process.env.DB_NAME
+      : process.env.DB_NAME_TEST,
   keepConnectionAlive: true,
   entities:
     process.env.NODE_ENV === 'test'

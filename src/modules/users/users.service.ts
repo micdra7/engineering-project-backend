@@ -110,7 +110,7 @@ export class UsersService {
     const emailValid =
       user.email === updateUserDto.email
         ? true
-        : !(await this.findByEmail(updateUserDto.email));
+        : !!(await this.findByEmail(updateUserDto.email));
 
     if (!emailValid) {
       throw new HttpException(
