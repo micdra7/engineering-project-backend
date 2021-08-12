@@ -1,15 +1,5 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Tasks')
@@ -18,27 +8,37 @@ export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post()
-  create(@Body() createTaskDto: CreateTaskDto) {
-    return this.tasksService.create(createTaskDto);
+  async create() {
+    // creates a new task
   }
 
   @Get()
-  findAll() {
-    return this.tasksService.findAll();
+  async getAll() {
+    // returns all task
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tasksService.findOne(+id);
+  @Get()
+  async getOne() {
+    // returns one task
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
-    return this.tasksService.update(+id, updateTaskDto);
+  @Patch('/:id')
+  async update() {
+    // updates task
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.tasksService.remove(+id);
+  @Delete('/:id')
+  async delete() {
+    // deletes task
+  }
+
+  @Patch('/:id/update-status')
+  async updateStatus() {
+    // updates task status - only for subtasks
+  }
+
+  @Patch('/:id/change-list')
+  async changeList() {
+    // moves task between lists
   }
 }
