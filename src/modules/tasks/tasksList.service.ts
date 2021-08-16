@@ -4,7 +4,7 @@ import { PaginationResponse } from 'src/utils/pagination.response';
 import { Repository } from 'typeorm';
 import { Workspace } from '../workspaces/entities/workspace.entity';
 import { CreateTaskListDto } from './dto/create-taskList.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
+import { UpdateTaskListDto } from './dto/update-taskList.dto';
 import { TaskList } from './entities/taskList.entity';
 import { TaskItemResponse } from './response/task-item.response';
 
@@ -91,11 +91,35 @@ export class TaskListsService {
     );
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
+  async update(dto: UpdateTaskListDto): Promise<TaskItemResponse> {
+    const taskList = await this.taskListsRepository.findOne(dto.id);
+    if (!taskList) {
+      throw new BadRequestException('Task list for given id does not exist');
+    }
+
+    const taskListForName = await this.taskListsRepository.findOne({
+      where: { name: dto.name },
+    });
+    if (!!taskListForName) {
+      throw new BadRequestException('New name is already in use');
+    }
+
+    taskList.name = dto.name;
+
+    await this.taskListsRepository.save(taskList);
+
+    return {
+      id: dto.id,
+      name: dto.name,
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} task`;
+  async remove(id: number): Promise<void> {
+    const taskList = await this.taskListsRepository.findOne(id);
+    if (!taskList) {
+      throw new BadRequestException('Task list for given id does not exist');
+    }
+
+    await this.taskListsRepository.remove(taskList);
   }
 }

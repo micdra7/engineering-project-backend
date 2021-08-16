@@ -4,6 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { PaginationResponse } from 'src/utils/pagination.response';
 import { Workspace } from '../workspaces/entities/workspace.entity';
 import { CreateTaskListDto } from './dto/create-taskList.dto';
+import { UpdateTaskListDto } from './dto/update-taskList.dto';
 import { TaskList } from './entities/taskList.entity';
 import { TaskItemResponse } from './response/task-item.response';
 import { TaskListsService } from './tasksList.service';
@@ -21,7 +22,8 @@ describe('TaskListsService', () => {
             findOne: jest.fn().mockImplementation((...args: any) => {
               if (
                 args?.[0]?.where?.name === 'Test List' ||
-                args?.[0]?.where?.id === 1
+                args?.[0]?.where?.id === 1 ||
+                args?.[0] === 1
               ) {
                 return Promise.resolve({
                   id: 1,
@@ -42,6 +44,9 @@ describe('TaskListsService', () => {
                 name,
               });
             }),
+            remove: jest
+              .fn()
+              .mockImplementationOnce((id: number) => Promise.resolve()),
             createQueryBuilder: jest.fn().mockReturnValue({
               innerJoinAndSelect: () => ({
                 where: () => ({
@@ -156,9 +161,55 @@ describe('TaskListsService', () => {
     expect(actual).toBeNull;
   });
 
-  // it('update - should update if list exists and new name is unique', () => {});
+  it('update - should update if list exists and new name is unique', async () => {
+    const dto: UpdateTaskListDto = {
+      id: 1,
+      name: 'Test List 123123',
+    };
 
-  // it('update - should fail if list with given id does not exist', () => {});
+    const expected: TaskItemResponse = {
+      id: 1,
+      name: 'Test List 123123',
+    };
 
-  // it('update - should fail if new name is not unique', () => {});
+    const actual: TaskItemResponse = await service.update(dto);
+
+    expect(actual).toStrictEqual(expected);
+  });
+
+  it('update - should fail if list with given id does not exist', async () => {
+    const dto: UpdateTaskListDto = {
+      id: 0,
+      name: 'Test List 123123',
+    };
+
+    await expect(async () => {
+      await service.update(dto).catch(err => {
+        throw err;
+      });
+    }).rejects.toThrow(BadRequestException);
+  });
+
+  it('update - should fail if new name is not unique', async () => {
+    const dto: UpdateTaskListDto = {
+      id: 1,
+      name: 'Test List',
+    };
+
+    await expect(async () => {
+      await service.update(dto).catch(err => {
+        throw err;
+      });
+    }).rejects.toThrow(BadRequestException);
+  });
+
+  it('remove - should fail if taskList with given id does not exist', async () => {
+    await expect(async () => {
+      await service.remove(0);
+    }).rejects.toThrow(BadRequestException);
+  });
+
+  it('remove - should remove if taskList with given id exists', async () => {
+    await expect(service.remove(1)).resolves.not.toThrow();
+  });
 });
