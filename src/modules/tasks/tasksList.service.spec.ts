@@ -44,9 +44,7 @@ describe('TaskListsService', () => {
                 name,
               });
             }),
-            remove: jest
-              .fn()
-              .mockImplementationOnce((id: number) => Promise.resolve()),
+            remove: jest.fn().mockImplementationOnce(() => Promise.resolve()),
             createQueryBuilder: jest.fn().mockReturnValue({
               innerJoinAndSelect: () => ({
                 where: () => ({
