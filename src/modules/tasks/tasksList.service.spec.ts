@@ -1,9 +1,11 @@
+import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { PaginationResponse } from 'src/utils/pagination.response';
 import { Workspace } from '../workspaces/entities/workspace.entity';
 import { CreateTaskListDto } from './dto/create-taskList.dto';
 import { TaskList } from './entities/taskList.entity';
-import { CreateTaskListResponse } from './response/create-taskList.response';
+import { TaskItemResponse } from './response/task-item.response';
 import { TaskListsService } from './tasksList.service';
 
 describe('TaskListsService', () => {
@@ -17,7 +19,10 @@ describe('TaskListsService', () => {
           provide: getRepositoryToken(TaskList),
           useValue: {
             findOne: jest.fn().mockImplementation((...args: any) => {
-              if (args?.where?.name === 'Test List') {
+              if (
+                args?.[0]?.where?.name === 'Test List' ||
+                args?.[0]?.where?.id === 1
+              ) {
                 return Promise.resolve({
                   id: 1,
                   name: 'Test List',
@@ -37,13 +42,32 @@ describe('TaskListsService', () => {
                 name,
               });
             }),
+            createQueryBuilder: jest.fn().mockReturnValue({
+              innerJoinAndSelect: () => ({
+                where: () => ({
+                  orderBy: () => ({
+                    skip: () => ({
+                      take: () => ({
+                        getManyAndCount: () => [
+                          [{ id: 1, name: 'Test List' }],
+                          1,
+                        ],
+                      }),
+                    }),
+                  }),
+                }),
+              }),
+            }),
           },
         },
         {
           provide: getRepositoryToken(Workspace),
           useValue: {
             findOne: jest.fn().mockImplementation((args: any) => {
-              if (args?.where?.name === 'Test Workspace') {
+              if (
+                args?.where?.name === 'Test Workspace' ||
+                args?.[0]?.where?.name === 'Test Workspace'
+              ) {
                 return Promise.resolve({
                   id: 1,
                   name: 'Test Workspace',
@@ -74,12 +98,12 @@ describe('TaskListsService', () => {
       name: 'Test List 123',
     };
 
-    const expected: CreateTaskListResponse = {
+    const expected: TaskItemResponse = {
       id: 1,
       name: 'Test List 123',
     };
 
-    const actual: CreateTaskListResponse = await service.create(
+    const actual: TaskItemResponse = await service.create(
       dto,
       'Test Workspace',
     );
@@ -87,13 +111,50 @@ describe('TaskListsService', () => {
     expect(actual).toStrictEqual(expected);
   });
 
-  // it('create - should fail if list with given name already exists', () => {});
+  it('create - should fail if list with given name already exists', async () => {
+    const dto: CreateTaskListDto = {
+      name: 'Test List',
+    };
 
-  // it('findAll - should return a list of all tasks (with pagination)', () => {});
+    await expect(async () => {
+      await service.create(dto, 'Test Workspace').catch(err => {
+        throw err;
+      });
+    }).rejects.toThrow(BadRequestException);
+  });
 
-  // it('findOne - should return a list for given id', () => {});
+  it('findAll - should return a list of all tasks (with pagination)', async () => {
+    const expected: PaginationResponse<TaskItemResponse> = {
+      data: [{ id: 1, name: 'Test List' }],
+      meta: {
+        currentPage: 1,
+        itemCount: 10,
+        totalPages: 1,
+        totalItems: 1,
+      },
+    };
 
-  // it('findOne - should return null if list with given id is not found', () => {});
+    const actual = await service.findAll('Test Workspace', 1, 10);
+
+    expect(actual).toStrictEqual(expected);
+  });
+
+  it('findOne - should return a list for given id', async () => {
+    const expected: TaskItemResponse = {
+      id: 1,
+      name: 'Test List',
+    };
+
+    const actual: TaskItemResponse = await service.findOne(1, 'Test Workspace');
+
+    expect(actual).toStrictEqual(expected);
+  });
+
+  it('findOne - should return null if list with given id is not found', async () => {
+    const actual: TaskItemResponse = await service.findOne(0, 'Test Workspace');
+
+    expect(actual).toBeNull;
+  });
 
   // it('update - should update if list exists and new name is unique', () => {});
 
