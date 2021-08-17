@@ -63,7 +63,7 @@ describe('UsersService', () => {
                 return Promise.resolve(undefined);
               })
               .mockImplementationOnce((...args: any) => {
-                if (args?.where?.email === 'test1@test.net') {
+                if (args?.[0]?.where?.email === 'test1@test.net') {
                   return Promise.resolve({
                     id: 1,
                     firstName: 'John',
