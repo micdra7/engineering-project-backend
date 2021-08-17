@@ -81,4 +81,65 @@ describe('TaskListsController (e2e)', () => {
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
   });
+
+  it('/tasklists/:id fails for empty body (PATCH)', async () => {
+    const random = Math.random() * 100 + 10;
+    const result = await request(app.getHttpServer())
+      .post('/tasklists')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: `Test List ${random}` });
+
+    return request(app.getHttpServer())
+      .patch(`/tasklists/${result.body.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(400);
+  });
+
+  it('/tasklists/:id fails dto validaton (PATCH)', async () => {
+    const random = Math.random() * 100 + 10;
+    const result = await request(app.getHttpServer())
+      .post('/tasklists')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: `Test List ${random}` });
+
+    return request(app.getHttpServer())
+      .patch(`/tasklists/${result.body.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: '' })
+      .expect(400);
+  });
+
+  it('/tasklists/:id succeeds for valid dto (PATCH)', async () => {
+    const random = Math.random() * 100 + 10;
+    const result = await request(app.getHttpServer())
+      .post('/tasklists')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: `Test List ${random}` });
+
+    return request(app.getHttpServer())
+      .patch(`/tasklists/${result.body.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ id: result.body.id, name: `Test ${random} List` })
+      .expect(200);
+  });
+
+  it('/tasklists/:id fails for invalid id (DELETE)', async () => {
+    return request(app.getHttpServer())
+      .delete(`/tasklists/0`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(400);
+  });
+
+  it('/tasklists/:id succeeds for valid id (DELETE)', async () => {
+    const random = Math.random() * 100 + 10;
+    const result = await request(app.getHttpServer())
+      .post('/tasklists')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: `Test List ${random}` });
+
+    return request(app.getHttpServer())
+      .delete(`/tasklists/${result.body.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
+  });
 });
