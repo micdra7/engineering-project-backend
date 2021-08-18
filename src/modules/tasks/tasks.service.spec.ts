@@ -5,7 +5,6 @@ import { PaginationResponse } from 'src/utils/pagination.response';
 import { Workspace } from '../workspaces/entities/workspace.entity';
 import { ChangeListDto } from './dto/change-list.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { CreateTaskListDto } from './dto/create-taskList.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Task } from './entities/task.entity';

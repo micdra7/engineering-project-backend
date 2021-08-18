@@ -7,9 +7,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Task } from './entities/task.entity';
 import { TaskList } from './entities/taskList.entity';
 import { Workspace } from '../workspaces/entities/workspace.entity';
+import { User } from '../users/entities/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Task, TaskList, Workspace])],
+  imports: [TypeOrmModule.forFeature([Task, TaskList, Workspace, User])],
   controllers: [TasksController, TasksListsController],
   providers: [TasksService, TaskListsService],
 })
