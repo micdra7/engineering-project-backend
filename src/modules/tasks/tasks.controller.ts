@@ -54,7 +54,7 @@ export class TasksController {
     return this.tasksService.findAll(req.user.workspaceName, page, limit);
   }
 
-  @Get()
+  @Get('/:id')
   @ApiOkResponse({
     description: 'Returns selected task',
     type: TaskItemResponse,

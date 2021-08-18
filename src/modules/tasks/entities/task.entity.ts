@@ -24,20 +24,20 @@ export class Task {
   startDate: Date;
 
   @Column()
-  finishDate: Date;
+  finishDate?: Date;
 
   // only used if object is a subtask
   @Column()
-  isDone: boolean;
+  isDone?: boolean;
 
   @ManyToOne(() => Task, task => task.childrenTasks)
-  parentTask: Task;
+  parentTask?: Task;
 
   @OneToMany(() => Task, task => task.parentTask)
-  childrenTasks: Task[];
+  childrenTasks?: Task[];
 
   @ManyToMany(() => User, user => user.tasks)
-  users: User[];
+  users?: User[];
 
   @ManyToOne(() => TaskList, taskList => taskList.tasks)
   taskList: TaskList;

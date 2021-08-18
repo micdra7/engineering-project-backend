@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsDate, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 
 export class CreateTaskDto {
   @ApiProperty()
@@ -12,11 +12,9 @@ export class CreateTaskDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsDate()
   startDate: Date;
 
   @ApiProperty()
-  @IsDate()
   finishDate?: Date;
 
   @ApiProperty()
@@ -24,10 +22,8 @@ export class CreateTaskDto {
   taskListId: number;
 
   @ApiProperty()
-  @IsNumber()
   parentTaskId?: number;
 
   @ApiProperty()
-  @IsArray()
   assignedUserIds?: number[];
 }

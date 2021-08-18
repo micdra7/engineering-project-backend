@@ -30,8 +30,17 @@ export class TasksService {
 
     if (dto.parentTaskId) {
       task.parentTask = await this.taskRepository.findOne({
-        where: { id: dto.parentTaskId, workspace: { name: workspaceName } },
-        relations: ['workspace'],
+        where: {
+          id: dto.parentTaskId,
+          taskList: { workspace: { name: workspaceName } },
+        },
+        join: {
+          alias: 'task',
+          leftJoinAndSelect: {
+            taskList: 'task.taskList',
+            workspace: 'taskList.workspace',
+          },
+        },
       });
     }
 
@@ -67,7 +76,7 @@ export class TasksService {
   ): Promise<PaginationResponse<TaskItemResponse>> {
     const [items, count] = await this.taskRepository
       .createQueryBuilder('task')
-      .innerJoinAndSelect('task.user', 'user')
+      .innerJoinAndSelect('task.users', 'users')
       .innerJoinAndSelect('task.parentTask', 'parentTask')
       .innerJoinAndSelect('task.taskList', 'taskList')
       .innerJoinAndSelect('taskList.workspace', 'workspace')
@@ -103,7 +112,7 @@ export class TasksService {
   async findOne(id: number): Promise<TaskItemResponse> {
     const task = await this.taskRepository.findOne({
       where: { id },
-      relations: ['user', 'parentTask', 'taskList'],
+      relations: ['users', 'parentTask', 'taskList'],
     });
 
     return (
@@ -124,7 +133,7 @@ export class TasksService {
   async update(dto: UpdateTaskDto): Promise<TaskItemResponse> {
     let task = await this.taskRepository.findOne({
       where: { id: dto.id },
-      relations: ['user', 'parentTask', 'taskList'],
+      relations: ['users', 'parentTask', 'taskList'],
     });
     if (!task) {
       throw new BadRequestException('Task for given id does not exist');
@@ -159,7 +168,7 @@ export class TasksService {
   async changeList(dto: ChangeListDto): Promise<TaskItemResponse> {
     const task = await this.taskRepository.findOne({
       where: { id: dto.taskId },
-      relations: ['user', 'parentTask', 'taskList'],
+      relations: ['users', 'parentTask', 'taskList'],
     });
     if (!task) {
       throw new BadRequestException('Task for given id does not exist');
@@ -190,7 +199,7 @@ export class TasksService {
   async updateStatus(dto: UpdateStatusDto): Promise<TaskItemResponse> {
     const task = await this.taskRepository.findOne({
       where: { id: dto.id },
-      relations: ['user', 'parentTask', 'taskList'],
+      relations: ['users', 'parentTask', 'taskList'],
     });
     if (!task) {
       throw new BadRequestException('Task for given id does not exist');

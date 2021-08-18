@@ -29,7 +29,7 @@ describe('TaskListsController (e2e)', () => {
     await connection.close();
   });
 
-  it('/tasklist fails for empty body (POST)', async () => {
+  it('/tasklists fails for empty body (POST)', async () => {
     return request(app.getHttpServer())
       .post(`/tasklists`)
       .set('Authorization', `Bearer ${token}`)
