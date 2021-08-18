@@ -126,7 +126,7 @@ describe('TaskListsService', () => {
     }).rejects.toThrow(BadRequestException);
   });
 
-  it('findAll - should return a list of all tasks (with pagination)', async () => {
+  it('findAll - should return a list of all task lists  (with pagination)', async () => {
     const expected: PaginationResponse<TaskItemResponse> = {
       data: [{ id: 1, name: 'Test List' }],
       meta: {
