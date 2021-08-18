@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class TaskItemResponse {
+export class TaskListItemResponse {
   @ApiProperty()
   id: number;
 

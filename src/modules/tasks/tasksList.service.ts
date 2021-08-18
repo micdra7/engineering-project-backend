@@ -6,7 +6,7 @@ import { Workspace } from '../workspaces/entities/workspace.entity';
 import { CreateTaskListDto } from './dto/create-taskList.dto';
 import { UpdateTaskListDto } from './dto/update-taskList.dto';
 import { TaskList } from './entities/taskList.entity';
-import { TaskItemResponse } from './response/task-item.response';
+import { TaskListItemResponse } from './response/taskList-item.response';
 
 @Injectable()
 export class TaskListsService {
@@ -20,7 +20,7 @@ export class TaskListsService {
   async create(
     dto: CreateTaskListDto,
     workspaceName: string,
-  ): Promise<TaskItemResponse> {
+  ): Promise<TaskListItemResponse> {
     const taskListExists = !!(await this.taskListsRepository.findOne({
       where: { name: dto.name },
     }));
@@ -51,7 +51,7 @@ export class TaskListsService {
     workspaceName: string,
     page: number,
     limit: number,
-  ): Promise<PaginationResponse<TaskItemResponse>> {
+  ): Promise<PaginationResponse<TaskListItemResponse>> {
     const [items, count] = await this.taskListsRepository
       .createQueryBuilder('taskList')
       .innerJoinAndSelect('taskList.workspace', 'workspace')
@@ -77,7 +77,10 @@ export class TaskListsService {
     };
   }
 
-  async findOne(id: number, workspaceName: string): Promise<TaskItemResponse> {
+  async findOne(
+    id: number,
+    workspaceName: string,
+  ): Promise<TaskListItemResponse> {
     const taskList = await this.taskListsRepository.findOne({
       where: { workspace: { name: workspaceName }, id },
       relations: ['workspace'],
@@ -91,7 +94,7 @@ export class TaskListsService {
     );
   }
 
-  async update(dto: UpdateTaskListDto): Promise<TaskItemResponse> {
+  async update(dto: UpdateTaskListDto): Promise<TaskListItemResponse> {
     const taskList = await this.taskListsRepository.findOne(dto.id);
     if (!taskList) {
       throw new BadRequestException('Task list for given id does not exist');

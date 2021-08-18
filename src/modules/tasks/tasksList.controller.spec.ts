@@ -5,7 +5,7 @@ import { Workspace } from '../workspaces/entities/workspace.entity';
 import { CreateTaskListDto } from './dto/create-taskList.dto';
 import { UpdateTaskListDto } from './dto/update-taskList.dto';
 import { TaskList } from './entities/taskList.entity';
-import { TaskItemResponse } from './response/task-item.response';
+import { TaskListItemResponse } from './response/taskList-item.response';
 import { TasksListsController } from './tasksList.controller';
 import { TaskListsService } from './tasksList.service';
 
@@ -102,7 +102,7 @@ describe('TasksListsController', () => {
       name: 'Test List 123',
     };
 
-    const expected: TaskItemResponse = {
+    const expected: TaskListItemResponse = {
       id: 1,
       name: 'Test List 123',
     };
@@ -115,7 +115,7 @@ describe('TasksListsController', () => {
   });
 
   it('getAll - returns a list of all task lists', async () => {
-    const expected: PaginationResponse<TaskItemResponse> = {
+    const expected: PaginationResponse<TaskListItemResponse> = {
       data: [{ id: 1, name: 'Test List' }],
       meta: {
         currentPage: 1,
@@ -133,7 +133,7 @@ describe('TasksListsController', () => {
   });
 
   it('getOne - returns one taskList', async () => {
-    const expected: TaskItemResponse = {
+    const expected: TaskListItemResponse = {
       id: 1,
       name: 'Test List',
     };
@@ -151,7 +151,7 @@ describe('TasksListsController', () => {
       name: 'Test List 123123',
     };
 
-    const expected: TaskItemResponse = {
+    const expected: TaskListItemResponse = {
       id: 1,
       name: 'Test List 123123',
     };

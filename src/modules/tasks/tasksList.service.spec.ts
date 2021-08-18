@@ -6,7 +6,7 @@ import { Workspace } from '../workspaces/entities/workspace.entity';
 import { CreateTaskListDto } from './dto/create-taskList.dto';
 import { UpdateTaskListDto } from './dto/update-taskList.dto';
 import { TaskList } from './entities/taskList.entity';
-import { TaskItemResponse } from './response/task-item.response';
+import { TaskListItemResponse } from './response/taskList-item.response';
 import { TaskListsService } from './tasksList.service';
 
 describe('TaskListsService', () => {
@@ -101,12 +101,12 @@ describe('TaskListsService', () => {
       name: 'Test List 123',
     };
 
-    const expected: TaskItemResponse = {
+    const expected: TaskListItemResponse = {
       id: 1,
       name: 'Test List 123',
     };
 
-    const actual: TaskItemResponse = await service.create(
+    const actual: TaskListItemResponse = await service.create(
       dto,
       'Test Workspace',
     );
@@ -127,7 +127,7 @@ describe('TaskListsService', () => {
   });
 
   it('findAll - should return a list of all task lists  (with pagination)', async () => {
-    const expected: PaginationResponse<TaskItemResponse> = {
+    const expected: PaginationResponse<TaskListItemResponse> = {
       data: [{ id: 1, name: 'Test List' }],
       meta: {
         currentPage: 1,
@@ -143,18 +143,24 @@ describe('TaskListsService', () => {
   });
 
   it('findOne - should return a list for given id', async () => {
-    const expected: TaskItemResponse = {
+    const expected: TaskListItemResponse = {
       id: 1,
       name: 'Test List',
     };
 
-    const actual: TaskItemResponse = await service.findOne(1, 'Test Workspace');
+    const actual: TaskListItemResponse = await service.findOne(
+      1,
+      'Test Workspace',
+    );
 
     expect(actual).toStrictEqual(expected);
   });
 
   it('findOne - should return null if list with given id is not found', async () => {
-    const actual: TaskItemResponse = await service.findOne(0, 'Test Workspace');
+    const actual: TaskListItemResponse = await service.findOne(
+      0,
+      'Test Workspace',
+    );
 
     expect(actual).toBeNull;
   });
@@ -165,12 +171,12 @@ describe('TaskListsService', () => {
       name: 'Test List 123123',
     };
 
-    const expected: TaskItemResponse = {
+    const expected: TaskListItemResponse = {
       id: 1,
       name: 'Test List 123123',
     };
 
-    const actual: TaskItemResponse = await service.update(dto);
+    const actual: TaskListItemResponse = await service.update(dto);
 
     expect(actual).toStrictEqual(expected);
   });
