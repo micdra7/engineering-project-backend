@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { PaginationResponse } from '../../utils/pagination.response';
 import { Repository } from 'typeorm';
 import { Workspace } from '../workspaces/entities/workspace.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Task } from './entities/task.entity';
 import { TaskList } from './entities/taskList.entity';
+import { TaskItemResponse } from './response/task-item.reponse';
+import { ChangeListDto } from './dto/change-list.dto';
+import { UpdateStatusDto } from './dto/update-status.dto';
 
 @Injectable()
 export class TasksService {
@@ -18,23 +22,38 @@ export class TasksService {
     private readonly workspaceRepository: Repository<Workspace>,
   ) {}
 
-  create(dto: CreateTaskDto) {
-    return 'This action adds a new task';
+  async create(
+    dto: CreateTaskDto,
+    workspaceName: string,
+  ): Promise<TaskItemResponse> {
+    return null;
   }
 
-  findAll() {
-    return `This action returns all tasks`;
+  async findAll(
+    workspaceName: string,
+    page: number,
+    limit: number,
+  ): Promise<PaginationResponse<TaskItemResponse>> {
+    return null;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} task`;
+  async findOne(id: number): Promise<TaskItemResponse> {
+    return null;
   }
 
-  update(id: number, dto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
+  async update(dto: UpdateTaskDto): Promise<TaskItemResponse> {
+    return null;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} task`;
+  async remove(id: number): Promise<void> {
+    return null;
+  }
+
+  async changeList(dto: ChangeListDto): Promise<TaskItemResponse> {
+    return null;
+  }
+
+  async updateStatus(dto: UpdateStatusDto): Promise<TaskItemResponse> {
+    return null;
   }
 }
