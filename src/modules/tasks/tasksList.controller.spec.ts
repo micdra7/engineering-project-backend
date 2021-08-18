@@ -138,7 +138,7 @@ describe('TasksListsController', () => {
       name: 'Test List',
     };
 
-    const actual = await controller.getOne(1, {
+    const actual = await controller.getOne('1', {
       user: { workspaceName: 'Test List' },
     });
 
