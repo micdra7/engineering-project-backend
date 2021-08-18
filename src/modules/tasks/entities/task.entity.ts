@@ -26,6 +26,10 @@ export class Task {
   @Column()
   finishDate: Date;
 
+  // only used if object is a subtask
+  @Column()
+  isDone: boolean;
+
   @ManyToOne(() => Task, task => task.childrenTasks)
   parentTask: Task;
 
