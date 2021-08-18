@@ -17,7 +17,7 @@ export class CreateTaskDto {
 
   @ApiProperty()
   @IsDate()
-  finishDate: Date;
+  finishDate?: Date;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -25,9 +25,9 @@ export class CreateTaskDto {
 
   @ApiProperty()
   @IsNumber()
-  parentTaskId: number;
+  parentTaskId?: number;
 
   @ApiProperty()
   @IsArray()
-  assignedUserIds: number[];
+  assignedUserIds?: number[];
 }

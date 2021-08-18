@@ -14,17 +14,20 @@ export class TaskItemResponse {
   startDate: Date;
 
   @ApiProperty()
-  finishDate: Date;
+  finishDate?: Date;
 
   @ApiProperty()
   taskListId: number;
 
   @ApiProperty()
-  parentTaskId: number;
+  parentTaskId?: number;
 
   @ApiProperty()
-  assignedUserIds: number[];
+  assignedUserIds?: number[];
 
   @ApiProperty()
-  childrenTasks: TaskItemResponse[];
+  childrenTasks?: TaskItemResponse[];
+
+  @ApiProperty()
+  isDone?: boolean;
 }
