@@ -6,7 +6,7 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Task } from './entities/task.entity';
 import { TaskList } from './entities/taskList.entity';
-import { TaskItemResponse } from './response/task-item.reponse';
+import { TaskItemResponse } from './response/task-item.response';
 import { ChangeListDto } from './dto/change-list.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { User } from '../users/entities/user.entity';
@@ -92,7 +92,7 @@ export class TasksService {
         startDate: val.startDate,
         finishDate: val.finishDate,
         taskListId: val.taskList.id,
-        parentTaskId: val.parentTask.id ?? 0,
+        parentTaskId: val.parentTask?.id ?? 0,
         isDone: val.isDone ?? false,
         assignedUserIds: val.users.map(u => u.id),
       })),
@@ -106,17 +106,19 @@ export class TasksService {
       relations: ['user', 'parentTask', 'taskList'],
     });
 
-    return {
-      id: task.id,
-      name: task.name,
-      description: task.description,
-      startDate: task.startDate,
-      finishDate: task.finishDate,
-      taskListId: task.taskList.id,
-      parentTaskId: task.parentTask.id ?? 0,
-      isDone: task.isDone ?? false,
-      assignedUserIds: task.users.map(u => u.id),
-    };
+    return (
+      task && {
+        id: task.id,
+        name: task.name,
+        description: task.description,
+        startDate: task.startDate,
+        finishDate: task.finishDate,
+        taskListId: task.taskList.id,
+        parentTaskId: task.parentTask?.id ?? 0,
+        isDone: task.isDone ?? false,
+        assignedUserIds: task.users.map(u => u.id),
+      }
+    );
   }
 
   async update(dto: UpdateTaskDto): Promise<TaskItemResponse> {
@@ -139,7 +141,7 @@ export class TasksService {
       startDate: task.startDate,
       finishDate: task.finishDate,
       taskListId: task.taskList.id,
-      parentTaskId: task.parentTask.id ?? 0,
+      parentTaskId: task.parentTask?.id ?? 0,
       isDone: task.isDone ?? false,
       assignedUserIds: task.users.map(u => u.id),
     };
@@ -179,7 +181,7 @@ export class TasksService {
       startDate: task.startDate,
       finishDate: task.finishDate,
       taskListId: task.taskList.id,
-      parentTaskId: task.parentTask.id ?? 0,
+      parentTaskId: task.parentTask?.id ?? 0,
       isDone: task.isDone ?? false,
       assignedUserIds: task.users.map(u => u.id),
     };
@@ -194,6 +196,10 @@ export class TasksService {
       throw new BadRequestException('Task for given id does not exist');
     }
 
+    if (!task.parentTask) {
+      throw new BadRequestException('Task is not a subtask');
+    }
+
     task.isDone = dto.isDone;
 
     await this.taskRepository.save(task);
@@ -205,7 +211,7 @@ export class TasksService {
       startDate: task.startDate,
       finishDate: task.finishDate,
       taskListId: task.taskList.id,
-      parentTaskId: task.parentTask.id ?? 0,
+      parentTaskId: task.parentTask?.id ?? 0,
       isDone: task.isDone ?? false,
       assignedUserIds: task.users.map(u => u.id),
     };
