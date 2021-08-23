@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { TaskItemResponse } from './task-item.response';
 
 export class TaskListItemResponse {
   @ApiProperty()
@@ -6,4 +7,7 @@ export class TaskListItemResponse {
 
   @ApiProperty()
   name: string;
+
+  @ApiProperty()
+  tasks?: TaskItemResponse[];
 }

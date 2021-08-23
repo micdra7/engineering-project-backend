@@ -55,6 +55,9 @@ export class TaskListsService {
     const [items, count] = await this.taskListsRepository
       .createQueryBuilder('taskList')
       .innerJoinAndSelect('taskList.workspace', 'workspace')
+      .leftJoinAndSelect('taskList.tasks', 'tasks')
+      .leftJoinAndSelect('tasks.parentTask', 'parentTask')
+      .leftJoinAndSelect('tasks.users', 'users')
       .where('workspace.name = :workspaceName', { workspaceName })
       .orderBy('taskList.id', 'ASC')
       .skip((page - 1) * limit)
@@ -72,6 +75,17 @@ export class TaskListsService {
       data: items.map(val => ({
         id: val.id,
         name: val.name,
+        tasks: val.tasks.map(task => ({
+          id: task.id,
+          name: task.name,
+          description: task.description,
+          startDate: task.startDate,
+          finishDate: task.finishDate,
+          taskListId: task.taskList.id,
+          parentTaskId: task.parentTask.id ?? 0,
+          isDone: task.isDone ?? false,
+          assignedUserIds: task.users.map(u => u.id),
+        })),
       })),
       meta,
     };
