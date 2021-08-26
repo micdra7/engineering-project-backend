@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationResponse } from '../../utils/pagination.response';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Task } from './entities/task.entity';
@@ -50,7 +50,7 @@ export class TasksService {
 
     if (dto.assignedUserIds) {
       task.users = await this.userRepository.find({
-        where: { id: dto.assignedUserIds },
+        where: { id: In(dto.assignedUserIds) },
       });
     }
 
@@ -140,6 +140,12 @@ export class TasksService {
     }
 
     task = { ...task, ...dto };
+
+    if (dto.assignedUserIds) {
+      task.users = await this.userRepository.find({
+        where: { id: In(dto.assignedUserIds) },
+      });
+    }
 
     await this.taskRepository.save(task);
 
