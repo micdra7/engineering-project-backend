@@ -112,7 +112,7 @@ export class TasksService {
   async findOne(id: number): Promise<TaskItemResponse> {
     const task = await this.taskRepository.findOne({
       where: { id },
-      relations: ['users', 'parentTask', 'taskList'],
+      relations: ['users', 'parentTask', 'taskList', 'childrenTasks'],
     });
 
     return (
@@ -126,6 +126,17 @@ export class TasksService {
         parentTaskId: task.parentTask?.id ?? 0,
         isDone: task.isDone ?? false,
         assignedUserIds: task.users.map(u => u.id),
+        childrenTasks: task.childrenTasks?.map(t => ({
+          id: t.id,
+          name: t.name,
+          description: t.description,
+          startDate: t.startDate,
+          finishDate: t.finishDate,
+          taskListId: task.taskList.id,
+          parentTaskId: t.parentTask?.id ?? 0,
+          isDone: t.isDone ?? false,
+          assignedUserIds: t.users?.map(u => u.id),
+        })),
       }
     );
   }
@@ -163,12 +174,31 @@ export class TasksService {
   }
 
   async remove(id: number): Promise<void> {
-    const task = await this.taskRepository.findOne(id);
+    const tasksToRemove: Task[] = [];
+
+    const task = await this.taskRepository.findOne({
+      where: { id },
+      relations: ['users', 'parentTask', 'taskList', 'childrenTasks'],
+    });
     if (!task) {
       throw new BadRequestException('Task for given id does not exist');
     }
 
-    await this.taskRepository.remove(task);
+    tasksToRemove.push(task);
+
+    if (task.childrenTasks?.length > 0) {
+      if (task.childrenTasks.some(t => !t.isDone)) {
+        throw new BadRequestException(
+          'All subtasks have to be finished before deleting this task',
+        );
+      } else {
+        task.childrenTasks.forEach(t => {
+          tasksToRemove.push(t);
+        });
+      }
+    }
+
+    await this.taskRepository.remove(tasksToRemove);
   }
 
   async changeList(dto: ChangeListDto): Promise<TaskItemResponse> {
