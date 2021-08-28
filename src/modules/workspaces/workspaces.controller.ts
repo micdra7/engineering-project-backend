@@ -14,7 +14,7 @@ import { WorkspacesService } from './workspaces.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
 import { AddToWorkspaceDto } from './dto/add-to-workspace.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Workspaces')
 @Controller('workspaces')
@@ -27,6 +27,7 @@ export class WorkspacesController {
   }
 
   @Post('/add-user')
+  @ApiOkResponse({ description: 'User added to workspace' })
   @HttpCode(HttpStatus.OK)
   async addUserToWorkspace(@Req() req, @Body() dto: AddToWorkspaceDto) {
     return this.workspacesService.addUserToWorkspace(
