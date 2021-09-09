@@ -24,14 +24,15 @@ export class ChatroomsService {
   async create(dto: CreateChatroomDto) {
     let chatroom = this.chatroomRepository.create({ name: dto.name });
     chatroom = await this.chatroomRepository.save(chatroom);
+
     const users = await this.userRepository.find({
       where: { id: In(dto.assignedUserIds) },
     });
 
     const userChatrooms: UserChatrooms[] = [];
-
     users.forEach(user => {
       userChatrooms.push({
+        id: 0,
         user,
         userId: user.id,
         chatroom,

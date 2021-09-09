@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ChatroomsService } from './chatrooms.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
@@ -38,10 +30,5 @@ export class ChatroomsController {
     @Body() updateChatroomDto: UpdateChatroomDto,
   ) {
     return this.chatroomsService.update(+id, updateChatroomDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.chatroomsService.remove(+id);
   }
 }
