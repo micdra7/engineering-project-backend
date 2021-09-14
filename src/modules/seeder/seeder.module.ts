@@ -12,6 +12,8 @@ import { TaskList } from '../tasks/entities/taskList.entity';
 import { User } from '../users/entities/user.entity';
 import { UserWorkspaces } from '../workspaces/entities/userWorkspaces.entity';
 import { Workspace } from '../workspaces/entities/workspace.entity';
+import { SeederController } from './seeder.controller';
+import { SeederService } from './seeder.service';
 
 @Module({
   imports: [
@@ -30,5 +32,7 @@ import { Workspace } from '../workspaces/entities/workspace.entity';
       Workspace,
     ]),
   ],
+  controllers: [SeederController],
+  providers: [SeederService],
 })
 export class SeederModule {}

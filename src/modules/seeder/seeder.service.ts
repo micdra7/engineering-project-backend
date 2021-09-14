@@ -44,18 +44,18 @@ export class SeederService {
   }
 
   async removeAll() {
-    await this.callRepository.clear();
-    await this.chatroomRepository.clear();
-    await this.messageRepository.clear();
-    await this.userChatroomsRepository.clear();
-    await this.gameRepository.clear();
-    await this.gameDataRepository.clear();
-    await this.gameResultRepository.clear();
-    await this.taskRepository.clear();
-    await this.taskListRepository.clear();
-    await this.userRepository.clear();
-    await this.userWorkspaceRepository.clear();
-    await this.workspaceRepository.clear();
+    await this.gameDataRepository.delete({});
+    await this.gameResultRepository.delete({});
+    await this.gameRepository.delete({});
+    await this.callRepository.delete({});
+    await this.messageRepository.delete({});
+    await this.chatroomRepository.delete({});
+    await this.userChatroomsRepository.delete({});
+    await this.userWorkspaceRepository.delete({});
+    await this.userRepository.delete({});
+    await this.taskRepository.delete({});
+    await this.taskListRepository.delete({});
+    await this.workspaceRepository.delete({});
   }
 
   private async createUsersWithWorkspaces() {

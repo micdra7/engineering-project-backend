@@ -26,7 +26,5 @@ import configuration from './utils/configuration';
     AuthModule,
     SeederModule,
   ],
-  controllers: [SeederController],
-  providers: [SeederService],
 })
 export class AppModule {}

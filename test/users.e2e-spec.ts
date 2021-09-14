@@ -17,6 +17,7 @@ describe('UsersController (e2e)', () => {
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
     await app.init();
 
+    await request(app.getHttpServer()).post('/seeder');
     token = await (
       await request(app.getHttpServer())
         .post('/auth/login')
