@@ -15,6 +15,8 @@ describe('AuthController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
     await app.init();
+
+    await request(app.getHttpServer()).post('/seeder');
   });
 
   afterEach(async () => {
@@ -159,6 +161,9 @@ describe('AuthController (e2e)', () => {
     const response = await request(app.getHttpServer())
       .post('/auth/login')
       .send({ email: 'test@test.net', password: 'QWE12345rty$' });
+    const extraUserResponse = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: 'test2@test.net', password: 'QWE12345rty$' });
     const token = response.body.accessToken;
 
     return request(app.getHttpServer())
@@ -167,8 +172,8 @@ describe('AuthController (e2e)', () => {
       .send({
         accessToken: token,
         refreshToken: response.body.refreshToken,
-        workspaceName: 'Test1.1636515370452294 Workspace',
-        workspaceId: 3,
+        workspaceName: extraUserResponse.body.workspaces[0].workspaceName,
+        workspaceId: extraUserResponse.body.workspaces[0].id,
       })
       .expect(400);
   });
@@ -185,8 +190,8 @@ describe('AuthController (e2e)', () => {
       .send({
         accessToken: token,
         refreshToken: response.body.refreshToken,
-        workspaceName: 'Test Workspace 2',
-        workspaceId: 9,
+        workspaceName: response.body.workspaces[1].workspaceName,
+        workspaceId: response.body.workspaces[1].id,
       })
       .expect(200);
   });

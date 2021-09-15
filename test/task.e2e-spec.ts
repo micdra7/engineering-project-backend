@@ -17,6 +17,7 @@ describe('TasksController (e2e)', () => {
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
     await app.init();
 
+    await await request(app.getHttpServer()).post('/seeder');
     token = await (
       await request(app.getHttpServer())
         .post('/auth/login')
@@ -47,6 +48,10 @@ describe('TasksController (e2e)', () => {
   it('/tasks succeeds for valid body (POST)', async () => {
     const random = Math.random() * 100 + 10;
 
+    const taskLists = await request(app.getHttpServer())
+      .get(`/tasklists`)
+      .set('Authorization', `Bearer ${token}`);
+
     return request(app.getHttpServer())
       .post(`/tasks`)
       .set('Authorization', `Bearer ${token}`)
@@ -54,7 +59,7 @@ describe('TasksController (e2e)', () => {
         name: `Test Task ${random}`,
         description: `Test Task ${random} description`,
         startDate: new Date(),
-        taskListId: 1,
+        taskListId: taskLists?.body?.data?.[0]?.id,
       })
       .expect(201);
   });
@@ -76,6 +81,10 @@ describe('TasksController (e2e)', () => {
 
   it('/tasks/:id returns task for valid id (GET)', async () => {
     const random = Math.random() * 100 + 10;
+    const taskLists = await request(app.getHttpServer())
+      .get(`/tasklists`)
+      .set('Authorization', `Bearer ${token}`);
+
     const result = await request(app.getHttpServer())
       .post('/tasks')
       .set('Authorization', `Bearer ${token}`)
@@ -83,7 +92,7 @@ describe('TasksController (e2e)', () => {
         name: `Test Task ${random}`,
         description: `Test Task ${random} description`,
         startDate: new Date(),
-        taskListId: 1,
+        taskListId: taskLists?.body?.data?.[0]?.id,
       });
 
     return request(app.getHttpServer())
@@ -94,6 +103,9 @@ describe('TasksController (e2e)', () => {
 
   it('/tasks/:id fails for empty body (PATCH)', async () => {
     const random = Math.random() * 100 + 10;
+    const taskLists = await request(app.getHttpServer())
+      .get(`/tasklists`)
+      .set('Authorization', `Bearer ${token}`);
     const result = await request(app.getHttpServer())
       .post('/tasks')
       .set('Authorization', `Bearer ${token}`)
@@ -101,7 +113,7 @@ describe('TasksController (e2e)', () => {
         name: `Test Task ${random}`,
         description: `Test Task ${random} description`,
         startDate: new Date(),
-        taskListId: 1,
+        taskListId: taskLists?.body?.data?.[0]?.id,
       });
 
     return request(app.getHttpServer())
@@ -112,6 +124,9 @@ describe('TasksController (e2e)', () => {
 
   it('/tasks/:id fails dto validation (PATCH)', async () => {
     const random = Math.random() * 100 + 10;
+    const taskLists = await request(app.getHttpServer())
+      .get(`/tasklists`)
+      .set('Authorization', `Bearer ${token}`);
     const result = await request(app.getHttpServer())
       .post('/tasks')
       .set('Authorization', `Bearer ${token}`)
@@ -119,7 +134,7 @@ describe('TasksController (e2e)', () => {
         name: `Test Task ${random}`,
         description: `Test Task ${random} description`,
         startDate: new Date(),
-        taskListId: 1,
+        taskListId: taskLists?.body?.data?.[0]?.id,
       });
 
     return request(app.getHttpServer())
@@ -131,6 +146,9 @@ describe('TasksController (e2e)', () => {
 
   it('/tasks/:id succeeds for valid body (PATCH)', async () => {
     const random = Math.random() * 100 + 10;
+    const taskLists = await request(app.getHttpServer())
+      .get(`/tasklists`)
+      .set('Authorization', `Bearer ${token}`);
     const result = await request(app.getHttpServer())
       .post('/tasks')
       .set('Authorization', `Bearer ${token}`)
@@ -138,7 +156,7 @@ describe('TasksController (e2e)', () => {
         name: `Test Task ${random}`,
         description: `Test Task ${random} description`,
         startDate: new Date(),
-        taskListId: 1,
+        taskListId: taskLists?.body?.data?.[0]?.id,
       });
 
     return request(app.getHttpServer())
@@ -149,7 +167,7 @@ describe('TasksController (e2e)', () => {
         name: `Test Task ${random + 1}`,
         description: `Test Task ${random + 1} description`,
         startDate: new Date(),
-        taskListId: 1,
+        taskListId: taskLists?.body?.data?.[0]?.id,
       })
       .expect(200);
   });
@@ -163,6 +181,9 @@ describe('TasksController (e2e)', () => {
 
   it('/tasks/:id removes task for valid id (DELETE)', async () => {
     const random = Math.random() * 100 + 10;
+    const taskLists = await request(app.getHttpServer())
+      .get(`/tasklists`)
+      .set('Authorization', `Bearer ${token}`);
     const result = await request(app.getHttpServer())
       .post('/tasks')
       .set('Authorization', `Bearer ${token}`)
@@ -170,7 +191,7 @@ describe('TasksController (e2e)', () => {
         name: `Test Task ${random}`,
         description: `Test Task ${random} description`,
         startDate: new Date(),
-        taskListId: 1,
+        taskListId: taskLists?.body?.data?.[0]?.id,
       });
 
     return request(app.getHttpServer())
@@ -181,6 +202,9 @@ describe('TasksController (e2e)', () => {
 
   it('/tasks/:id/update-status updates status if task is a subtask (PATCH)', async () => {
     const random = Math.random() * 100 + 10;
+    const taskLists = await request(app.getHttpServer())
+      .get(`/tasklists`)
+      .set('Authorization', `Bearer ${token}`);
     const parentTask = await request(app.getHttpServer())
       .post('/tasks')
       .set('Authorization', `Bearer ${token}`)
@@ -188,8 +212,7 @@ describe('TasksController (e2e)', () => {
         name: `Test Task ${random}`,
         description: `Test Task ${random} description`,
         startDate: new Date(),
-        taskListId: 1,
-        parentTaskId: 1,
+        taskListId: taskLists?.body?.data?.[0]?.id,
       });
     const task = await request(app.getHttpServer())
       .post('/tasks')
@@ -198,7 +221,7 @@ describe('TasksController (e2e)', () => {
         name: `Test Task ${random}123`,
         description: `Test Task ${random}123 description`,
         startDate: new Date(),
-        taskListId: 1,
+        taskListId: taskLists?.body?.data?.[0]?.id,
         parentTaskId: parentTask.body.id,
       });
 
@@ -211,6 +234,9 @@ describe('TasksController (e2e)', () => {
 
   it('/tasks/:id/update-status fails if task is not a subtask (PATCH)', async () => {
     const random = Math.random() * 100 + 10;
+    const taskLists = await request(app.getHttpServer())
+      .get(`/tasklists`)
+      .set('Authorization', `Bearer ${token}`);
     const result = await request(app.getHttpServer())
       .post('/tasks')
       .set('Authorization', `Bearer ${token}`)
@@ -218,7 +244,7 @@ describe('TasksController (e2e)', () => {
         name: `Test Task ${random}`,
         description: `Test Task ${random} description`,
         startDate: new Date(),
-        taskListId: 1,
+        taskListId: taskLists?.body?.data?.[0]?.id,
       });
 
     return request(app.getHttpServer())
@@ -230,6 +256,9 @@ describe('TasksController (e2e)', () => {
 
   it('/tasks/:id/change-list fails if target list does not exist (PATCH)', async () => {
     const random = Math.random() * 100 + 10;
+    const taskLists = await request(app.getHttpServer())
+      .get(`/tasklists`)
+      .set('Authorization', `Bearer ${token}`);
     const result = await request(app.getHttpServer())
       .post('/tasks')
       .set('Authorization', `Bearer ${token}`)
@@ -237,7 +266,7 @@ describe('TasksController (e2e)', () => {
         name: `Test Task ${random}`,
         description: `Test Task ${random} description`,
         startDate: new Date(),
-        taskListId: 1,
+        taskListId: taskLists?.body?.data?.[0]?.id,
       });
 
     return request(app.getHttpServer())
@@ -249,6 +278,9 @@ describe('TasksController (e2e)', () => {
 
   it('/tasks/:id/change-list succeeds for valid body (PATCH)', async () => {
     const random = Math.random() * 100 + 10;
+    const taskLists = await request(app.getHttpServer())
+      .get(`/tasklists`)
+      .set('Authorization', `Bearer ${token}`);
     const result = await request(app.getHttpServer())
       .post('/tasks')
       .set('Authorization', `Bearer ${token}`)
@@ -256,12 +288,12 @@ describe('TasksController (e2e)', () => {
         name: `Test Task ${random}`,
         description: `Test Task ${random} description`,
         startDate: new Date(),
-        taskListId: 1,
+        taskListId: taskLists?.body?.data?.[0]?.id,
       });
 
     return request(app.getHttpServer())
       .patch(`/tasks/${result.body.id}/change-list`)
-      .send({ taskId: result.body.id, listId: 2 })
+      .send({ taskId: result.body.id, listId: taskLists?.body?.data?.[1]?.id })
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
   });
