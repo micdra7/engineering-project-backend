@@ -40,7 +40,8 @@ export class SeederService {
   ) {}
 
   async seed() {
-    await this.createUsersWithWorkspaces();
+    const { workspaces } = await this.createUsersWithWorkspaces();
+    await this.createTaskLists(workspaces);
   }
 
   async removeAll() {
@@ -136,6 +137,31 @@ export class SeederService {
       },
     ];
 
-    await this.userWorkspaceRepository.save(userWorkspaces);
+    const dbUserWorkspaces = await this.userWorkspaceRepository.save(
+      userWorkspaces,
+    );
+
+    return {
+      workspaces: dbWorkspaces,
+      users: dbUsers,
+      userWorkspaces: dbUserWorkspaces,
+    };
+  }
+
+  private async createTaskLists(workspaces: Workspace[]) {
+    const taskLists: Partial<TaskList>[] = [
+      {
+        name: 'Task List 1',
+        workspace: workspaces[0],
+      },
+      {
+        name: 'Task List 2',
+        workspace: workspaces[0],
+      },
+    ];
+
+    const dbTaskLists = await this.taskListRepository.save(taskLists);
+
+    return { taskLists: dbTaskLists };
   }
 }
