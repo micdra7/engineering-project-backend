@@ -14,21 +14,21 @@ export class ChatroomsController {
     return this.chatroomsService.create(createChatroomDto);
   }
 
-  @Get()
-  findAll() {
-    return this.chatroomsService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.chatroomsService.findAll();
+  // }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.chatroomsService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateChatroomDto: UpdateChatroomDto,
-  ) {
-    return this.chatroomsService.update(+id, updateChatroomDto);
-  }
+  // @Patch(':id')
+  // update(
+  //   @Param('id') id: string,
+  //   @Body() updateChatroomDto: UpdateChatroomDto,
+  // ) {
+  //   return this.chatroomsService.update(+id, updateChatroomDto);
+  // }
 }

@@ -63,7 +63,7 @@ export class User {
   calls: Call[];
 
   @ApiProperty()
-  @ManyToMany(() => Message, message => message.users)
+  @OneToMany(() => Message, message => message.user)
   @JoinTable()
   messages: Message[];
 }
