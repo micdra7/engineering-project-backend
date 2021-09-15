@@ -11,7 +11,7 @@ export class Chatroom {
   name: string;
 
   @OneToMany(() => UserChatrooms, userChatrooms => userChatrooms.chatroom)
-  userChatrooms!: UserChatrooms;
+  userChatrooms!: UserChatrooms[];
 
   @OneToMany(() => Message, message => message.chatroom)
   messages: Message[];

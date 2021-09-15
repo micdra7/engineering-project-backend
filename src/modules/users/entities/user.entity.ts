@@ -46,7 +46,7 @@ export class User {
 
   @ApiProperty()
   @OneToMany(() => UserChatrooms, userChatrooms => userChatrooms.user)
-  userChatrooms: UserChatrooms;
+  userChatrooms: UserChatrooms[];
 
   @ApiProperty()
   @OneToMany(() => GameResult, gameResult => gameResult.user)
