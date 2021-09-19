@@ -10,9 +10,9 @@ module.exports = {
       : process.env.DB_NAME_TEST,
   keepConnectionAlive: true,
   entities:
-    process.env.NODE_ENV !== 'test'
-      ? ['dist/**/*.entity.js']
-      : ['src/**/*.entity.ts'],
+    process.env.NODE_ENV === 'test'
+      ? ['src/**/*.entity.ts']
+      : ['dist/**/*.entity.js'],
   migrations: ['dist/migration/*.js'],
   cli: {
     migrationsDir: 'migration',

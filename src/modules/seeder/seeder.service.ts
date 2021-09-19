@@ -50,8 +50,8 @@ export class SeederService {
     await this.gameRepository.delete({});
     await this.callRepository.delete({});
     await this.messageRepository.delete({});
-    await this.chatroomRepository.delete({});
     await this.userChatroomsRepository.delete({});
+    await this.chatroomRepository.delete({});
     await this.userWorkspaceRepository.delete({});
     await this.userRepository.delete({});
     await this.taskRepository.delete({});
