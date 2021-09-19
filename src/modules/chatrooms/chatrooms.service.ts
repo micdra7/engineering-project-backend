@@ -9,6 +9,8 @@ import { Chatroom } from './entities/chatroom.entity';
 import { Message } from './entities/message.entity';
 import { UserChatrooms } from './entities/userChatrooms.entity';
 import { ChatroomResponse } from './response/chatroom.response';
+import { CreateMessageDto } from './dto/create-message.dto';
+import { MessageResponse } from './response/message.response';
 
 @Injectable()
 export class ChatroomsService {
@@ -150,11 +152,62 @@ export class ChatroomsService {
     };
   }
 
-  saveMessage() {
-    return 'This action saves a new message';
+  async saveMessage(dto: CreateMessageDto): Promise<MessageResponse> {
+    const user = await this.userRepository.findOne(dto.userId);
+    const chatroom = await this.chatroomRepository.findOne(dto.chatroomId);
+
+    const message = await this.messageRepository.save({
+      content: dto.content,
+      user,
+      chatroom,
+      filePath: '',
+      sendTime: new Date(),
+    });
+
+    return {
+      id: message.id,
+      content: message.content,
+      sendTime: message.sendTime,
+      userId: dto.userId,
+      userEmail: user.email,
+      chatroomId: dto.chatroomId,
+      chatroomName: chatroom.name,
+    };
   }
 
-  findMessages() {
-    return 'This action returns a list of messages';
+  async findMessages(
+    chatroomId: number,
+    page: number,
+    limit: number,
+  ): Promise<PaginationResponse<MessageResponse>> {
+    const [items, count] = await this.messageRepository
+      .createQueryBuilder('message')
+      .innerJoinAndSelect('message.user', 'user')
+      .innerJoinAndSelect('message.chatroom', 'chatroom')
+      .where('chatroom.id = :chatroomId', { chatroomId })
+      .orderBy('message.sendDate', 'DESC')
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+
+    const meta = {
+      currentPage: page,
+      itemCount: limit,
+      totalPages: Math.ceil(count / limit),
+      totalItems: count,
+    };
+
+    return {
+      data: items.map(item => ({
+        id: item.id,
+        content: item.content,
+        sendTime: item.sendTime,
+        userId: item.user.id,
+        userEmail: item.user.email,
+        chatroomId: item.chatroom.id,
+        chatroomName: item.chatroom.name,
+      })),
+      meta,
+    };
   }
 }
