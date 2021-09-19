@@ -82,7 +82,7 @@ export class SeederService {
         lastName: 'Doe',
         isActive: true,
         passwordHash:
-          '$2b$10$GRudr7.PxVgaADUihDvShOsYQoB.sV1uoUXFZpEqrrFHYBzz0/ebm', // Qwerty123
+          '$2b$10$ve/XjMij6/6d12hAO030y.nv6rGtVNhV0VI4i8yD1NPnugbZ217r6', // Qwerty123!
       },
       {
         email: 'test1@test.net',
@@ -90,7 +90,7 @@ export class SeederService {
         lastName: 'Smith',
         isActive: true,
         passwordHash:
-          '$2b$10$GRudr7.PxVgaADUihDvShOsYQoB.sV1uoUXFZpEqrrFHYBzz0/ebm', // Qwerty123
+          '$2b$10$ve/XjMij6/6d12hAO030y.nv6rGtVNhV0VI4i8yD1NPnugbZ217r6', // Qwerty123!
       },
 
       {
@@ -99,7 +99,7 @@ export class SeederService {
         lastName: 'Jackson',
         isActive: true,
         passwordHash:
-          '$2b$10$GRudr7.PxVgaADUihDvShOsYQoB.sV1uoUXFZpEqrrFHYBzz0/ebm', // Qwerty123
+          '$2b$10$ve/XjMij6/6d12hAO030y.nv6rGtVNhV0VI4i8yD1NPnugbZ217r6', // Qwerty123!
       },
     ];
 
