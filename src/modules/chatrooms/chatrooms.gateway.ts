@@ -12,7 +12,7 @@ import { MessageResponse } from './response/message.response';
 import { UseGuards } from '@nestjs/common';
 import { JwtWsAuthGuard } from '../auth/guard/jwt-ws-auth.guard';
 
-@UseGuards(JwtWsAuthGuard)
+// @UseGuards(JwtWsAuthGuard)
 @WebSocketGateway()
 export class ChatroomsGateway {
   constructor(private readonly chatroomsService: ChatroomsService) {}
