@@ -64,7 +64,6 @@ export class ChatroomsService {
       .createQueryBuilder('chatroom')
       .innerJoinAndSelect('chatroom.userChatrooms', 'userChatrooms')
       .innerJoinAndSelect('userChatrooms.user', 'user')
-      .where('user.id = :userId', { userId })
       .orderBy('chatroom.id', 'ASC')
       .skip((page - 1) * limit)
       .take(limit)
@@ -78,11 +77,19 @@ export class ChatroomsService {
     };
 
     return {
-      data: items.map(item => ({
-        id: item.id,
-        name: item.name,
-        users: item.userChatrooms.map(userChatroom => userChatroom.user).flat(),
-      })),
+      data: items
+        .filter(item =>
+          item.userChatrooms.some(
+            userChatroom => userChatroom.userId === userId,
+          ),
+        )
+        .map(item => ({
+          id: item.id,
+          name: item.name,
+          users: item.userChatrooms
+            .map(userChatroom => userChatroom.user)
+            .flat(),
+        })),
       meta,
     };
   }
