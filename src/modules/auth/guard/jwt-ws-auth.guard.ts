@@ -10,14 +10,19 @@ export class JwtWsAuthGuard implements CanActivate {
   canActivate(context: ExecutionContext) {
     const authorizationHeader = context.switchToWs().getClient().handshake
       .headers.authorization;
-    const token = authorizationHeader.split(' ')[1].trim();
 
     try {
+      const token = authorizationHeader.split(' ')[1].trim();
       const decoded = jwt.verify(token, this.configService.get('jwt.secret'));
       const expiresAt: number = (decoded as unknown as { exp: number }).exp;
       const currentTimestamp = +new Date() / 1000;
 
-      return expiresAt > currentTimestamp;
+      if (expiresAt > currentTimestamp) {
+        context.switchToWs().getData().user = decoded;
+        return true;
+      }
+
+      return false;
     } catch (error) {
       return false;
     }
