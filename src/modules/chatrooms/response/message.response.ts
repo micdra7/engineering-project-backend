@@ -17,6 +17,9 @@ export class MessageResponse {
   userEmail: string;
 
   @ApiProperty()
+  userFullName: string;
+
+  @ApiProperty()
   chatroomId: number;
 
   @ApiProperty()

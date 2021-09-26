@@ -177,6 +177,7 @@ export class ChatroomsService {
       sendTime: message.sendTime,
       userId: dto.userId,
       userEmail: user.email,
+      userFullName: `${user.firstName} ${user.lastName}`,
       chatroomId: dto.chatroomId,
       chatroomName: chatroom.name,
     };
@@ -211,6 +212,7 @@ export class ChatroomsService {
         sendTime: item.sendTime,
         userId: item.user.id,
         userEmail: item.user.email,
+        userFullName: `${item.user.firstName} ${item.user.lastName}`,
         chatroomId: item.chatroom.id,
         chatroomName: item.chatroom.name,
       })),
