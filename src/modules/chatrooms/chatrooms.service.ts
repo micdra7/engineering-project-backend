@@ -187,7 +187,6 @@ export class ChatroomsService {
     page: number,
     limit: number,
   ): Promise<PaginationResponse<MessageResponse>> {
-    console.log(chatroomId, page, limit);
     const [items, count] = await this.messageRepository
       .createQueryBuilder('message')
       .innerJoinAndSelect('message.user', 'user')
@@ -197,7 +196,7 @@ export class ChatroomsService {
       .skip((page - 1) * limit)
       .take(limit)
       .getManyAndCount();
-    console.log('dupa');
+
     const meta = {
       currentPage: page,
       itemCount: limit,
