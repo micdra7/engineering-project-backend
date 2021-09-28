@@ -46,7 +46,7 @@ export class User {
 
   @ApiProperty()
   @OneToMany(() => UserChatrooms, userChatrooms => userChatrooms.user)
-  userChatrooms: UserChatrooms;
+  userChatrooms: UserChatrooms[];
 
   @ApiProperty()
   @OneToMany(() => GameResult, gameResult => gameResult.user)
@@ -63,7 +63,7 @@ export class User {
   calls: Call[];
 
   @ApiProperty()
-  @ManyToMany(() => Message, message => message.users)
+  @OneToMany(() => Message, message => message.user)
   @JoinTable()
   messages: Message[];
 }
