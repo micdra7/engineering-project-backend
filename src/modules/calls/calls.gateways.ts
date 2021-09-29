@@ -11,6 +11,31 @@ import { Socket } from 'socket.io';
 @UseGuards(JwtWsAuthGuard)
 @WebSocketGateway({ cors: { origin: '*' } })
 export class CallsGateway {
+  private activeUsers: { room: string; id: string }[] = [];
+
+  @SubscribeMessage('joniRoom')
+  async handleJoin(
+    @MessageBody('room') room: string,
+    @ConnectedSocket() client: Socket,
+  ): Promise<void> {
+    const existingUser = this.activeUsers?.find(
+      user => user.room === room && user.id === client.id,
+    );
+
+    if (!existingUser) {
+      this.activeUsers = [...this.activeUsers, { id: client.id, room }];
+
+      client.emit(`${room}-update-user-list`, {
+        users: this.activeUsers
+          .filter(user => user.room === room && user.id !== client.id)
+          .map(user => user.id),
+      });
+      client.broadcast.emit(`${room}-update-user-list`, {
+        users: [client.id],
+      });
+    }
+  }
+
   @SubscribeMessage('call')
   async handleCall(
     @MessageBody('to') to: string,
@@ -35,5 +60,17 @@ export class CallsGateway {
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
     client.to(from).emit('call-reject-made', { socket: client.id });
+  }
+
+  async handleDisconnect(client: Socket): Promise<void> {
+    const existingUser = this.activeUsers.find(user => user.id === client.id);
+
+    if (!existingUser) return;
+
+    this.activeUsers = this.activeUsers.filter(user => user.id !== client.id);
+
+    client.broadcast.emit(`${existingUser.room}-remove-user`, {
+      socketId: client.id,
+    });
   }
 }
