@@ -8,12 +8,12 @@ import {
 import { JwtWsAuthGuard } from '../auth/guard/jwt-ws-auth.guard';
 import { Socket } from 'socket.io';
 
-@UseGuards(JwtWsAuthGuard)
+// @UseGuards(JwtWsAuthGuard)
 @WebSocketGateway({ cors: { origin: '*' } })
 export class CallsGateway {
   private activeUsers: { room: string; id: string }[] = [];
 
-  @SubscribeMessage('joniRoom')
+  @SubscribeMessage('joinRoom')
   async handleJoin(
     @MessageBody('room') room: string,
     @ConnectedSocket() client: Socket,
