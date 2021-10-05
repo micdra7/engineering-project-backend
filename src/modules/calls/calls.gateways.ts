@@ -9,7 +9,7 @@ import { JwtWsAuthGuard } from '../auth/guard/jwt-ws-auth.guard';
 import { Socket } from 'socket.io';
 
 // @UseGuards(JwtWsAuthGuard)
-@WebSocketGateway({ cors: { origin: '*' } })
+@WebSocketGateway(3003, { cors: { origin: '*' } })
 export class CallsGateway {
   private activeUsers: { room: string; id: string }[] = [];
 
