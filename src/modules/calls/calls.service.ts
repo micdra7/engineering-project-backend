@@ -15,7 +15,7 @@ export class CallsService {
     private userRepository: Repository<User>,
   ) {}
 
-  create(createCallDto: CreateCallDto) {
+  create(dto: CreateCallDto) {
     return 'This action adds a new call';
   }
 
