@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
@@ -17,6 +17,18 @@ export class CallsService {
   ) {}
 
   async create(dto: CreateCallDto): Promise<CallResponse> {
+    if (dto.startDate < new Date()) {
+      throw new BadRequestException(
+        'Start date cannot be lower than current date',
+      );
+    }
+
+    if (dto.finishDate < dto.startDate) {
+      throw new BadRequestException(
+        'Finish date cannot be lower than start date',
+      );
+    }
+
     const users = await this.userRepository.findByIds(dto.assignedUserIds);
 
     const call = await this.callRepository.save({
@@ -50,6 +62,18 @@ export class CallsService {
   }
 
   async update(id: number, dto: UpdateCallDto): Promise<CallResponse> {
+    if (dto.startDate < new Date()) {
+      throw new BadRequestException(
+        'Start date cannot be lower than current date',
+      );
+    }
+
+    if (dto.finishDate < dto.startDate) {
+      throw new BadRequestException(
+        'Finish date cannot be lower than start date',
+      );
+    }
+
     const call = await this.callRepository.findOne(id);
     const users = await this.userRepository.findByIds(dto.assignedUserIds);
 
