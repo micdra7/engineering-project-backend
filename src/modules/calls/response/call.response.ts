@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { UsersListResponse } from '../../users/response/users-list.response';
 
 export class CallResponse {
   @ApiProperty()
@@ -14,5 +15,5 @@ export class CallResponse {
   finishDate: Date;
 
   @ApiProperty()
-  assignedUserIds: number[];
+  users: Partial<UsersListResponse>[];
 }

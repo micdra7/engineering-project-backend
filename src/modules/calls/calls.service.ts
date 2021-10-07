@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { PaginationResponse } from '../../utils/pagination.response';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { CreateCallDto } from './dto/create-call.dto';
@@ -43,7 +44,54 @@ export class CallsService {
       name: call.name,
       startDate: call.startDate,
       finishDate: call.finishDate,
-      assignedUserIds: dto.assignedUserIds,
+      users: users.map(user => ({
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isActive: user.isActive,
+      })),
+    };
+  }
+
+  async findAll(
+    userId: number,
+    startDate: Date,
+    page: number,
+    limit: number,
+  ): Promise<PaginationResponse<CallResponse>> {
+    const [items, count] = await this.callRepository
+      .createQueryBuilder('call')
+      .innerJoinAndSelect('call.users', 'users')
+      .where('users.id = :userId', { userId })
+      .andWhere('call.startDate >= :startDate', { startDate })
+      .orderBy('message.startDate', 'ASC')
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+
+    const meta = {
+      currentPage: page,
+      itemCount: limit,
+      totalPages: Math.ceil(count / limit),
+      totalItems: count,
+    };
+
+    return {
+      data: items.map(item => ({
+        id: item.id,
+        name: item.name,
+        startDate: item.startDate,
+        finishDate: item.finishDate,
+        users: item.users.map(user => ({
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          isActive: user.isActive,
+        })),
+      })),
+      meta,
     };
   }
 
@@ -57,7 +105,13 @@ export class CallsService {
       name: call.name,
       startDate: call.startDate,
       finishDate: call.finishDate,
-      assignedUserIds: call.users.map(user => user.id),
+      users: call.users.map(user => ({
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isActive: user.isActive,
+      })),
     };
   }
 
@@ -89,7 +143,13 @@ export class CallsService {
       name: call.name,
       startDate: call.startDate,
       finishDate: call.finishDate,
-      assignedUserIds: dto.assignedUserIds,
+      users: users.map(user => ({
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isActive: user.isActive,
+      })),
     };
   }
 
