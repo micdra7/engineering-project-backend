@@ -5,6 +5,7 @@ import { User } from '../users/entities/user.entity';
 import { CreateCallDto } from './dto/create-call.dto';
 import { UpdateCallDto } from './dto/update-call.dto';
 import { Call } from './entities/call.entity';
+import { CallResponse } from './response/call.response';
 
 @Injectable()
 export class CallsService {
@@ -15,23 +16,62 @@ export class CallsService {
     private userRepository: Repository<User>,
   ) {}
 
-  create(dto: CreateCallDto) {
-    return 'This action adds a new call';
+  async create(dto: CreateCallDto): Promise<CallResponse> {
+    const users = await this.userRepository.findByIds(dto.assignedUserIds);
+
+    const call = await this.callRepository.save({
+      name: dto.name,
+      startDate: dto.startDate,
+      finishDate: dto.finishDate,
+      users,
+    });
+
+    return {
+      id: call.id,
+      name: call.name,
+      startDate: call.startDate,
+      finishDate: call.finishDate,
+      assignedUserIds: dto.assignedUserIds,
+    };
   }
 
-  findAll() {
-    return `This action returns all calls`;
+  async findOne(id: number): Promise<CallResponse> {
+    const call = await this.callRepository.findOne(id, {
+      relations: ['users'],
+    });
+
+    return {
+      id: call.id,
+      name: call.name,
+      startDate: call.startDate,
+      finishDate: call.finishDate,
+      assignedUserIds: call.users.map(user => user.id),
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} call`;
+  async update(id: number, dto: UpdateCallDto): Promise<CallResponse> {
+    const call = await this.callRepository.findOne(id);
+    const users = await this.userRepository.findByIds(dto.assignedUserIds);
+
+    call.name = dto.name;
+    call.startDate = dto.startDate;
+    call.finishDate = dto.finishDate;
+    call.users = users;
+
+    await this.callRepository.update(id, call);
+
+    return {
+      id,
+      name: call.name,
+      startDate: call.startDate,
+      finishDate: call.finishDate,
+      assignedUserIds: dto.assignedUserIds,
+    };
   }
 
-  update(id: number, updateCallDto: UpdateCallDto) {
-    return `This action updates a #${id} call`;
-  }
+  async remove(id: number): Promise<void> {
+    const call = await this.callRepository.findOne(id);
 
-  remove(id: number) {
-    return `This action removes a #${id} call`;
+    await this.callRepository.remove(call);
   }
 }
