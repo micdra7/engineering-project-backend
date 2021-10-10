@@ -9,6 +9,9 @@ export class CallResponse {
   name: string;
 
   @ApiProperty()
+  generatedCode: string;
+
+  @ApiProperty()
   startDate: Date;
 
   @ApiProperty()

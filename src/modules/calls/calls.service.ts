@@ -7,6 +7,7 @@ import { CreateCallDto } from './dto/create-call.dto';
 import { UpdateCallDto } from './dto/update-call.dto';
 import { Call } from './entities/call.entity';
 import { CallResponse } from './response/call.response';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class CallsService {
@@ -37,6 +38,7 @@ export class CallsService {
       startDate: dto.startDate,
       finishDate: dto.finishDate,
       users,
+      generatedCode: uuidv4(),
     });
 
     return {
@@ -51,6 +53,7 @@ export class CallsService {
         lastName: user.lastName,
         isActive: user.isActive,
       })),
+      generatedCode: call.generatedCode,
     };
   }
 
@@ -89,6 +92,7 @@ export class CallsService {
           lastName: user.lastName,
           isActive: user.isActive,
         })),
+        generatedCode: item.generatedCode,
       })),
       meta,
     };
@@ -111,6 +115,7 @@ export class CallsService {
         lastName: user.lastName,
         isActive: user.isActive,
       })),
+      generatedCode: call.generatedCode,
     };
   }
 
@@ -149,6 +154,7 @@ export class CallsService {
         lastName: user.lastName,
         isActive: user.isActive,
       })),
+      generatedCode: call.generatedCode,
     };
   }
 
