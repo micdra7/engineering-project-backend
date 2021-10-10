@@ -56,7 +56,6 @@ export class CallsService {
 
   async findAll(
     userId: number,
-    startDate: Date,
     page: number,
     limit: number,
   ): Promise<PaginationResponse<CallResponse>> {
@@ -64,7 +63,7 @@ export class CallsService {
       .createQueryBuilder('call')
       .innerJoinAndSelect('call.users', 'users')
       .where('users.id = :userId', { userId })
-      .andWhere('call.startDate >= :startDate', { startDate })
+      .andWhere('call.startDate >= :startDate', { startDate: new Date() })
       .orderBy('message.startDate', 'ASC')
       .skip((page - 1) * limit)
       .take(limit)
