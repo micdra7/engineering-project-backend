@@ -119,6 +119,28 @@ export class CallsService {
     };
   }
 
+  async findByUuid(uuid: string): Promise<CallResponse> {
+    const call = await this.callRepository.findOne({
+      where: { generatedCode: uuid },
+      relations: ['users'],
+    });
+
+    return {
+      id: call.id,
+      name: call.name,
+      startDate: call.startDate,
+      finishDate: call.finishDate,
+      users: call.users.map(user => ({
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isActive: user.isActive,
+      })),
+      generatedCode: call.generatedCode,
+    };
+  }
+
   async update(id: number, dto: UpdateCallDto): Promise<CallResponse> {
     if (dto.startDate < new Date()) {
       throw new BadRequestException(

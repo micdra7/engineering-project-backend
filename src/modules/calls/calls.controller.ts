@@ -60,6 +60,15 @@ export class CallsController {
     return this.callsService.findOne(+id);
   }
 
+  @Get('uuid/:uuid')
+  @ApiOkResponse({
+    description: 'Returns selected call',
+    type: CallResponse,
+  })
+  async findByUuid(@Param('uuid') uuid: string): Promise<CallResponse> {
+    return this.callsService.findByUuid(uuid);
+  }
+
   @Patch(':id')
   @ApiOkResponse({
     description: 'Updates call for given id',
