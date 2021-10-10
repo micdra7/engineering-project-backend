@@ -66,8 +66,8 @@ export class CallsService {
       .createQueryBuilder('call')
       .innerJoinAndSelect('call.users', 'users')
       .where('users.id = :userId', { userId })
-      .andWhere('call.startDate >= :startDate', { startDate: new Date() })
-      .orderBy('message.startDate', 'ASC')
+      // .andWhere('call.startDate >= :startDate', { startDate: new Date() })
+      .orderBy('call.startDate', 'ASC')
       .skip((page - 1) * limit)
       .take(limit)
       .getManyAndCount();
