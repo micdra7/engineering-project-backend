@@ -25,11 +25,9 @@ export class CallsGateway {
     if (!existingUser) {
       this.activeUsers = [...this.activeUsers, { id: client.id, room }];
 
-      client.emit(`${room}-update-user-list`, {
-        users: this.activeUsers
-          .filter(user => user.room === room && user.id !== client.id)
-          .map(user => user.id),
-      });
+      // client.emit(`${room}-update-user-list`, {
+      //   users: [client.id],
+      // });
       client.broadcast.emit(`${room}-update-user-list`, {
         users: [client.id],
       });
