@@ -42,6 +42,11 @@ export class CallsGateway {
     @MessageBody('offer') offer: unknown,
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
+    const room = this.activeUsers.find(user => user.id === to)?.room;
+
+    if (this.activeUsers.filter(user => user.room === room)?.length === 1)
+      return;
+
     client.to(to).emit('call-offer', { offer, socket: client.id });
   }
 
