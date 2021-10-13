@@ -10,6 +10,9 @@ export class Call {
   name: string;
 
   @Column()
+  generatedCode: string;
+
+  @Column()
   startDate: Date;
 
   @Column()
