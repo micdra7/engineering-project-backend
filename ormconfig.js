@@ -18,6 +18,8 @@ module.exports = {
     migrationsDir: 'migration',
   },
   extra: {
-    ssl: process.env.DB_SSL === 'true',
+    ssl: {
+      rejectUnauthorized: true,
+    },
   },
 };
