@@ -17,4 +17,7 @@ module.exports = {
   cli: {
     migrationsDir: 'migration',
   },
+  extra: {
+    ssl: process.env.DB_SSL === 'true',
+  },
 };
