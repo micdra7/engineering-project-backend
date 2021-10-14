@@ -1,3 +1,4 @@
+import { UseFilters } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -8,7 +9,7 @@ import { Socket } from 'socket.io';
 
 @WebSocketGateway({ cors: { origin: '*' } })
 export class CallsGateway {
-  private activeUsers: { room: string; id: string }[] = [];
+  private activeUsers: { room: string; id: string; socketId: string }[] = [];
 
   @SubscribeMessage('joinRoom')
   async handleJoin(
@@ -21,7 +22,10 @@ export class CallsGateway {
     );
 
     if (!existingUser) {
-      this.activeUsers = [...this.activeUsers, { id, room }];
+      this.activeUsers = [
+        ...this.activeUsers,
+        { id, room, socketId: client.id },
+      ];
 
       client.join(room);
       client.to(room).emit('user-connected', {
@@ -39,6 +43,19 @@ export class CallsGateway {
     this.activeUsers = this.activeUsers.filter(user => user.id !== id);
     client.to(room).emit('user-disconnected', { user: id });
     client.leave(room);
+    client.disconnect();
+  }
+
+  @SubscribeMessage('disconnect')
+  async handleDisconnect(@ConnectedSocket() client: Socket) {
+    client.disconnect(true);
+    const currentUser = this.activeUsers.find(
+      user => user.socketId === client.id,
+    );
+    this.activeUsers = this.activeUsers.filter(
+      user => user.socketId !== client.id,
+    );
+    client.broadcast.emit('user-disconnected', { user: currentUser.id });
     client.disconnect();
   }
 }
