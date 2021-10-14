@@ -194,6 +194,7 @@ export class ChatroomsService {
       .innerJoinAndSelect('message.chatroom', 'chatroom')
       .where('chatroom.id = :chatroomId', { chatroomId })
       .orderBy('message.sendTime', 'DESC')
+      .addOrderBy('message.id', 'DESC')
       .skip((page - 1) * limit)
       .take(limit)
       .getManyAndCount();
