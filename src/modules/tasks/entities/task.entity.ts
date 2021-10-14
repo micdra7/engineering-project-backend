@@ -27,7 +27,7 @@ export class Task {
   finishDate?: Date;
 
   // only used if object is a subtask
-  @Column()
+  @Column({ nullable: true })
   isDone?: boolean;
 
   @ManyToOne(() => Task, task => task.childrenTasks)
