@@ -21,7 +21,7 @@ async function bootstrap() {
   app.setGlobalPrefix('/v1/api');
   await app.listen(process.env.PORT);
 
-  PeerServer({ port: 3004, path: '/peer' });
+  PeerServer({ path: '/peer' });
 }
 
 bootstrap();

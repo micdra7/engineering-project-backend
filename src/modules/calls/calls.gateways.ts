@@ -6,7 +6,7 @@ import {
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 
-@WebSocketGateway(3003, { cors: { origin: '*' } })
+@WebSocketGateway({ cors: { origin: '*' } })
 export class CallsGateway {
   private activeUsers: { room: string; id: string }[] = [];
 
