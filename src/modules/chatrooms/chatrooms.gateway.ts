@@ -13,7 +13,7 @@ import { UseGuards } from '@nestjs/common';
 import { JwtWsAuthGuard } from '../auth/guard/jwt-ws-auth.guard';
 
 @UseGuards(JwtWsAuthGuard)
-@WebSocketGateway(3002, { cors: { origin: '*' } })
+@WebSocketGateway({ cors: { origin: '*' } })
 export class ChatroomsGateway {
   constructor(private readonly chatroomsService: ChatroomsService) {}
 

@@ -206,16 +206,18 @@ export class ChatroomsService {
     };
 
     return {
-      data: items.map(item => ({
-        id: item.id,
-        content: item.content,
-        sendTime: item.sendTime,
-        userId: item.user.id,
-        userEmail: item.user.email,
-        userFullName: `${item.user.firstName} ${item.user.lastName}`,
-        chatroomId: item.chatroom.id,
-        chatroomName: item.chatroom.name,
-      })),
+      data: items
+        .map(item => ({
+          id: item.id,
+          content: item.content,
+          sendTime: item.sendTime,
+          userId: item.user.id,
+          userEmail: item.user.email,
+          userFullName: `${item.user.firstName} ${item.user.lastName}`,
+          chatroomId: item.chatroom.id,
+          chatroomName: item.chatroom.name,
+        }))
+        .reverse(),
       meta,
     };
   }
