@@ -23,7 +23,7 @@ export class Task {
   @Column()
   startDate: Date;
 
-  @Column()
+  @Column({ nullable: true })
   finishDate?: Date;
 
   // only used if object is a subtask
