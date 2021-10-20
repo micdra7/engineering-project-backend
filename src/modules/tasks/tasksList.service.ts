@@ -21,11 +21,12 @@ export class TaskListsService {
     dto: CreateTaskListDto,
     workspaceName: string,
   ): Promise<TaskListItemResponse> {
-    const taskListExists = !!(await this.taskListsRepository.findOne({
-      where: { name: dto.name },
-    }));
+    const foundTaskList = await this.taskListsRepository.findOne({
+      where: { name: dto.name, workspace: { name: workspaceName } },
+      relations: ['workspace'],
+    });
 
-    if (taskListExists) {
+    if (!!foundTaskList) {
       throw new BadRequestException('Task list with given name already exists');
     }
 
