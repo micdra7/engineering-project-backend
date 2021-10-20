@@ -30,4 +30,7 @@ export class TaskItemResponse {
 
   @ApiProperty()
   isDone?: boolean;
+
+  @ApiProperty()
+  isDeleted?: boolean;
 }

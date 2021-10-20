@@ -77,28 +77,34 @@ export class TaskListsService {
       data: items.map(val => ({
         id: val.id,
         name: val.name,
-        tasks: val.tasks.map(task => ({
-          id: task.id,
-          name: task.name,
-          description: task.description,
-          startDate: task.startDate,
-          finishDate: task.finishDate,
-          taskListId: val.id,
-          parentTaskId: task.parentTask?.id ?? 0,
-          isDone: task.isDone ?? false,
-          assignedUserIds: task.users.map(u => u.id),
-          childrenTasks: task.childrenTasks?.map(t => ({
-            id: t.id,
-            name: t.name,
-            description: t.description,
-            startDate: t.startDate,
-            finishDate: t.finishDate,
+        tasks: val.tasks
+          .filter(task => !task.isDeleted)
+          .map(task => ({
+            id: task.id,
+            name: task.name,
+            description: task.description,
+            startDate: task.startDate,
+            finishDate: task.finishDate,
             taskListId: val.id,
-            parentTaskId: t.parentTask?.id ?? 0,
-            isDone: t.isDone ?? false,
-            assignedUserIds: t.users?.map(u => u.id),
+            parentTaskId: task.parentTask?.id ?? 0,
+            isDone: task.isDone ?? false,
+            assignedUserIds: task.users.map(u => u.id),
+            isDeleted: task.isDeleted ?? false,
+            childrenTasks: task.childrenTasks
+              ?.filter(t => !t.isDeleted)
+              ?.map(t => ({
+                id: t.id,
+                name: t.name,
+                description: t.description,
+                startDate: t.startDate,
+                finishDate: t.finishDate,
+                taskListId: val.id,
+                parentTaskId: t.parentTask?.id ?? 0,
+                isDone: t.isDone ?? false,
+                assignedUserIds: t.users?.map(u => u.id),
+                isDeleted: t.isDeleted ?? false,
+              })),
           })),
-        })),
       })),
       meta,
     };
