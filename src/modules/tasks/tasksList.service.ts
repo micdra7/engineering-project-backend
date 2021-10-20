@@ -110,6 +110,68 @@ export class TaskListsService {
     };
   }
 
+  async findAllDeleted(
+    workspaceName: string,
+    page: number,
+    limit: number,
+  ): Promise<PaginationResponse<TaskListItemResponse>> {
+    const [items, count] = await this.taskListsRepository
+      .createQueryBuilder('taskList')
+      .innerJoinAndSelect('taskList.workspace', 'workspace')
+      .leftJoinAndSelect('taskList.tasks', 'tasks')
+      .leftJoinAndSelect('tasks.parentTask', 'parentTask')
+      .leftJoinAndSelect('tasks.users', 'users')
+      .leftJoinAndSelect('tasks.childrenTasks', 'childrenTasks')
+      .where('workspace.name = :workspaceName', { workspaceName })
+      .orderBy('taskList.id', 'ASC')
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+
+    const meta = {
+      currentPage: page,
+      itemCount: limit,
+      totalPages: Math.ceil(count / limit),
+      totalItems: count,
+    };
+
+    return {
+      data: items.map(val => ({
+        id: val.id,
+        name: val.name,
+        tasks: val.tasks
+          .filter(task => !!task.isDeleted)
+          .map(task => ({
+            id: task.id,
+            name: task.name,
+            description: task.description,
+            startDate: task.startDate,
+            finishDate: task.finishDate,
+            taskListId: val.id,
+            parentTaskId: task.parentTask?.id ?? 0,
+            isDone: task.isDone ?? false,
+            assignedUserIds: task.users.map(u => u.id),
+            isDeleted: task.isDeleted ?? false,
+            childrenTasks: task.childrenTasks
+              ?.filter(t => !!t.isDeleted)
+              ?.map(t => ({
+                id: t.id,
+                name: t.name,
+                description: t.description,
+                startDate: t.startDate,
+                finishDate: t.finishDate,
+                taskListId: val.id,
+                parentTaskId: t.parentTask?.id ?? 0,
+                isDone: t.isDone ?? false,
+                assignedUserIds: t.users?.map(u => u.id),
+                isDeleted: t.isDeleted ?? false,
+              })),
+          })),
+      })),
+      meta,
+    };
+  }
+
   async findOne(
     id: number,
     workspaceName: string,

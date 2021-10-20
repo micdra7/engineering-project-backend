@@ -56,6 +56,23 @@ export class TasksListsController {
     return this.tasksListService.findAll(req.user.workspaceName, page, limit);
   }
 
+  @Get('/deleted')
+  @ApiPaginatedResponse(
+    TaskListItemResponse,
+    'List with deleted tasks is successfully fetched',
+  )
+  async getAllDeleted(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
+    @Req() req,
+  ): Promise<PaginationResponse<TaskListItemResponse>> {
+    return this.tasksListService.findAllDeleted(
+      req.user.workspaceName,
+      page,
+      limit,
+    );
+  }
+
   @Get('/:id')
   @ApiOkResponse({
     description: 'Returns selected taskList',
