@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { PaginationResponse } from '../../utils/pagination.response';
 import { Repository } from 'typeorm';
 import { Workspace } from '../workspaces/entities/workspace.entity';
 import { CreateGameDto } from './dto/create-game.dto';
@@ -38,16 +39,69 @@ export class GamesService {
     };
   }
 
-  findAll() {
-    return `This action returns all games`;
+  async findAll(
+    workspaceName: string,
+    page: number,
+    limit: number,
+  ): Promise<PaginationResponse<GameResponse>> {
+    const [items, count] = await this.gameRepository
+      .createQueryBuilder('game')
+      .innerJoinAndSelect('game.workspace', 'workspace')
+      .where('workspace.name := workspaceName', { workspaceName })
+      .orderBy('game.id', 'ASC')
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+
+    const meta = {
+      currentPage: page,
+      itemCount: limit,
+      totalPages: Math.ceil(count / limit),
+      totalItems: count,
+    };
+
+    return {
+      data: items.map(val => ({
+        id: val.id,
+        name: val.name,
+        filepath: val.filepath,
+      })),
+      meta,
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} game`;
+  async findOne(id: number): Promise<GameResponse> {
+    const game = await this.gameRepository.findOne(id);
+
+    return {
+      id: game.id,
+      name: game.name,
+      filepath: game.filepath,
+    };
   }
 
-  update(id: number, updateGameDto: UpdateGameDto) {
-    return `This action updates a #${id} game`;
+  async update(
+    id: number,
+    dto: UpdateGameDto,
+    file: Express.Multer.File,
+  ): Promise<GameResponse> {
+    const game = await this.gameRepository.findOne(id);
+
+    if (dto.name) {
+      game.name = dto.name;
+    }
+
+    if (file.filename !== game.filepath) {
+      game.filepath = file.filename;
+    }
+
+    await this.gameRepository.update(id, game);
+
+    return {
+      id: game.id,
+      name: game.name,
+      filepath: game.filepath,
+    };
   }
 
   remove(id: number) {
