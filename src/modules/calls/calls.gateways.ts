@@ -1,4 +1,3 @@
-import { UseFilters } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
