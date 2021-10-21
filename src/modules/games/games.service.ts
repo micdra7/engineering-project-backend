@@ -91,7 +91,7 @@ export class GamesService {
       game.name = dto.name;
     }
 
-    if (file.filename !== game.filepath) {
+    if (file && file.filename !== game.filepath) {
       game.filepath = file.filename;
     }
 
