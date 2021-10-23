@@ -6,9 +6,12 @@ import { Game } from './entities/game.entity';
 import { Workspace } from '../workspaces/entities/workspace.entity';
 import { GameData } from './entities/gameData.entity';
 import { GameResult } from './entities/gameResult.entity';
+import { User } from '../users/entities/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Game, Workspace, GameData, GameResult])],
+  imports: [
+    TypeOrmModule.forFeature([Game, Workspace, GameData, GameResult, User]),
+  ],
   controllers: [GamesController],
   providers: [GamesService],
 })
