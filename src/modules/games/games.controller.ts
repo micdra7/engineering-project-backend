@@ -13,6 +13,8 @@ import {
   DefaultValuePipe,
   ParseIntPipe,
   Delete,
+  Header,
+  Res,
 } from '@nestjs/common';
 import { GamesService } from './games.service';
 import { CreateGameDto } from './dto/create-game.dto';
@@ -35,6 +37,8 @@ import { GameDataService } from './gameData.service';
 import { GameResultService } from './gameResult.service';
 import { CreateGameResultDto } from './dto/create-gameResult.dto';
 import { GameResultResponse } from './response/gameResult.response';
+import { ReadStream } from 'fs';
+import { Public } from '../auth/decorator/public.decorator';
 
 @ApiTags('Games')
 @Controller('games')
@@ -83,6 +87,18 @@ export class GamesController {
   })
   findOne(@Param('id') id: string): Promise<GameResponse> {
     return this.gamesService.findOne(+id);
+  }
+
+  @Get('/file/:id')
+  @ApiOkResponse({
+    description: 'Returns selected file',
+    type: GameResponse,
+  })
+  @Header('Content-Type', 'application/javascript')
+  findOneFile(@Param('id') id: string, @Res() res) {
+    const stream = this.gamesService.findFile(id);
+
+    stream.pipe(res);
   }
 
   @Patch(':id')

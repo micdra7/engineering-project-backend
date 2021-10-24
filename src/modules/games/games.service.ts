@@ -7,6 +7,8 @@ import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { Game } from './entities/game.entity';
 import { GameResponse } from './response/game.response';
+import { createReadStream, ReadStream } from 'fs';
+import { join } from 'path';
 
 @Injectable()
 export class GamesService {
@@ -102,5 +104,13 @@ export class GamesService {
       name: game.name,
       filepath: game.filepath,
     };
+  }
+
+  findFile(fileId: string): ReadStream {
+    const file = createReadStream(
+      join(`${process.cwd()}/uploads/games/`, fileId),
+    );
+
+    return file;
   }
 }
