@@ -94,6 +94,7 @@ export class GamesController {
     description: 'Returns selected file',
     type: GameResponse,
   })
+  @Public()
   @Header('Content-Type', 'application/javascript')
   findOneFile(@Param('id') id: string, @Res() res) {
     const stream = this.gamesService.findFile(id);
