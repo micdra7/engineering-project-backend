@@ -12,6 +12,7 @@ import {
   Query,
   DefaultValuePipe,
   ParseIntPipe,
+  Delete,
 } from '@nestjs/common';
 import { GamesService } from './games.service';
 import { CreateGameDto } from './dto/create-game.dto';
@@ -19,6 +20,7 @@ import { UpdateGameDto } from './dto/update-game.dto';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
+  ApiNoContentResponse,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -27,11 +29,21 @@ import { multerOptions } from '../../utils/multerOptions';
 import { GameResponse } from './response/game.response';
 import { ApiPaginatedResponse } from '../../utils/pagination.decorator';
 import { PaginationResponse } from '../../utils/pagination.response';
+import { GameDataResponse } from './response/gameData.response';
+import { CreateGameDataDto } from './dto/create-gameData.dto';
+import { GameDataService } from './gameData.service';
+import { GameResultService } from './gameResult.service';
+import { CreateGameResultDto } from './dto/create-gameResult.dto';
+import { GameResultResponse } from './response/gameResult.response';
 
 @ApiTags('Games')
 @Controller('games')
 export class GamesController {
-  constructor(private readonly gamesService: GamesService) {}
+  constructor(
+    private readonly gamesService: GamesService,
+    private readonly gameDataService: GameDataService,
+    private readonly gameResultService: GameResultService,
+  ) {}
 
   @Post()
   @ApiCreatedResponse({
@@ -85,5 +97,77 @@ export class GamesController {
     @UploadedFile() file: Express.Multer.File,
   ): Promise<GameResponse> {
     return this.gamesService.update(+id, dto, file);
+  }
+
+  @Post('data')
+  @ApiCreatedResponse({
+    description: 'GameData entry successfully created',
+    type: GameDataResponse,
+  })
+  @ApiBadRequestResponse({
+    description: 'Validation failed',
+  })
+  async createData(@Body() dto: CreateGameDataDto): Promise<GameDataResponse> {
+    return this.gameDataService.create(dto);
+  }
+
+  @Get('data')
+  @ApiPaginatedResponse(GameDataResponse, 'List is successfully fetched')
+  async findAllData(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
+    @Req() req,
+  ): Promise<PaginationResponse<GameDataResponse>> {
+    return this.gameDataService.findAll(req.user.workspaceName, page, limit);
+  }
+
+  @Get('data/:id')
+  @ApiOkResponse({
+    description: 'Returns selected game data entry',
+    type: GameDataResponse,
+  })
+  async findOneData(@Param('id') id: string): Promise<GameDataResponse> {
+    return this.gameDataService.findOne(+id);
+  }
+
+  @Delete('data/:id')
+  @ApiNoContentResponse({
+    description: 'Game data entry with given id successfully deleted',
+  })
+  async deleteData(@Param('id') id: string): Promise<void> {
+    await this.gameDataService.remove(+id);
+  }
+
+  @Post('result')
+  @ApiCreatedResponse({
+    description: 'GameResult entry successfully created',
+    type: GameResultResponse,
+  })
+  @ApiBadRequestResponse({
+    description: 'Validation failed',
+  })
+  async createResult(
+    @Body() dto: CreateGameResultDto,
+  ): Promise<GameResultResponse> {
+    return this.gameResultService.create(dto);
+  }
+
+  @Get('result')
+  @ApiPaginatedResponse(GameDataResponse, 'List is successfully fetched')
+  async findAllResults(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
+    @Req() req,
+  ): Promise<PaginationResponse<GameResultResponse>> {
+    return this.gameResultService.findAll(req.user.workspaceName, page, limit);
+  }
+
+  @Get('result/:id')
+  @ApiOkResponse({
+    description: 'Returns selected game result entry',
+    type: GameResultResponse,
+  })
+  async findOneResult(@Param('id') id: string): Promise<GameResultResponse> {
+    return this.gameResultService.findOne(+id);
   }
 }

@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationResponse } from '../../utils/pagination.response';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
-import { Workspace } from '../workspaces/entities/workspace.entity';
 import { CreateGameResultDto } from './dto/create-gameResult.dto';
 import { Game } from './entities/game.entity';
 import { GameResult } from './entities/gameResult.entity';
@@ -14,8 +13,6 @@ export class GameResultService {
   constructor(
     @InjectRepository(Game)
     private readonly gameRepository: Repository<Game>,
-    @InjectRepository(Workspace)
-    private readonly workspaceRepository: Repository<Workspace>,
     @InjectRepository(GameResult)
     private readonly gameResultRepository: Repository<GameResult>,
     @InjectRepository(User)
