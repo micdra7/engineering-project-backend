@@ -49,7 +49,7 @@ export class GamesService {
     const [items, count] = await this.gameRepository
       .createQueryBuilder('game')
       .innerJoinAndSelect('game.workspace', 'workspace')
-      .where('workspace.name := workspaceName', { workspaceName })
+      .where('workspace.name = :workspaceName', { workspaceName })
       .orderBy('game.id', 'ASC')
       .skip((page - 1) * limit)
       .take(limit)
