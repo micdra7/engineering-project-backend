@@ -37,7 +37,6 @@ import { GameDataService } from './gameData.service';
 import { GameResultService } from './gameResult.service';
 import { CreateGameResultDto } from './dto/create-gameResult.dto';
 import { GameResultResponse } from './response/gameResult.response';
-import { ReadStream } from 'fs';
 import { Public } from '../auth/decorator/public.decorator';
 
 @ApiTags('Games')

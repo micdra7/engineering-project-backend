@@ -8,7 +8,8 @@ export const multerOptions = {
   fileFilter: (req, file, callback) => {
     if (
       file.originalname.toLowerCase().endsWith('.js') &&
-      file.mimetype === 'application/javascript'
+      (file.mimetype.includes('javascript') ||
+        file.mimetype.includes('ecmascript'))
     ) {
       callback(null, true);
     } else {
