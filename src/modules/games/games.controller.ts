@@ -115,7 +115,7 @@ export class GamesController {
     return this.gamesService.update(+id, dto, file);
   }
 
-  @Post('data')
+  @Post('/data')
   @ApiCreatedResponse({
     description: 'GameData entry successfully created',
     type: GameDataResponse,
@@ -127,17 +127,18 @@ export class GamesController {
     return this.gameDataService.create(dto);
   }
 
-  @Get('data')
+  @Get('/data')
   @ApiPaginatedResponse(GameDataResponse, 'List is successfully fetched')
   async findAllData(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
     @Req() req,
   ): Promise<PaginationResponse<GameDataResponse>> {
+    console.log('req: ', req);
     return this.gameDataService.findAll(req.user.workspaceName, page, limit);
   }
 
-  @Get('data/:id')
+  @Get('/data/:id')
   @ApiOkResponse({
     description: 'Returns selected game data entry',
     type: GameDataResponse,
@@ -146,7 +147,7 @@ export class GamesController {
     return this.gameDataService.findOne(+id);
   }
 
-  @Delete('data/:id')
+  @Delete('/data/:id')
   @ApiNoContentResponse({
     description: 'Game data entry with given id successfully deleted',
   })
@@ -154,7 +155,7 @@ export class GamesController {
     await this.gameDataService.remove(+id);
   }
 
-  @Post('result')
+  @Post('/result')
   @ApiCreatedResponse({
     description: 'GameResult entry successfully created',
     type: GameResultResponse,
@@ -168,7 +169,7 @@ export class GamesController {
     return this.gameResultService.create(dto);
   }
 
-  @Get('result')
+  @Get('/result')
   @ApiPaginatedResponse(GameDataResponse, 'List is successfully fetched')
   async findAllResults(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
@@ -178,7 +179,7 @@ export class GamesController {
     return this.gameResultService.findAll(req.user.workspaceName, page, limit);
   }
 
-  @Get('result/:id')
+  @Get('/result/:id')
   @ApiOkResponse({
     description: 'Returns selected game result entry',
     type: GameResultResponse,

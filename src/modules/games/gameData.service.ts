@@ -42,7 +42,7 @@ export class GameDataService {
       .createQueryBuilder('gameData')
       .innerJoinAndSelect('gameData.game', 'game')
       .innerJoinAndSelect('game.workspace', 'workspace')
-      .where('workspace.name := workspaceName', { workspaceName })
+      .where('workspace.name = :workspaceName', { workspaceName })
       .orderBy('gameData.id', 'ASC')
       .skip((page - 1) * limit)
       .take(limit)
