@@ -37,12 +37,14 @@ export class GameDataService {
     workspaceName: string,
     page: number,
     limit: number,
+    gameId: number,
   ): Promise<PaginationResponse<GameDataResponse>> {
     const [items, count] = await this.gameDataRepository
       .createQueryBuilder('gameData')
       .innerJoinAndSelect('gameData.game', 'game')
       .innerJoinAndSelect('game.workspace', 'workspace')
       .where('workspace.name = :workspaceName', { workspaceName })
+      .andWhere('game.id = :gameId', { gameId })
       .orderBy('gameData.id', 'ASC')
       .skip((page - 1) * limit)
       .take(limit)

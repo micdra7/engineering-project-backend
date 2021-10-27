@@ -133,8 +133,14 @@ export class GamesController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
     @Req() req,
+    @Query('gameId') gameId: string,
   ): Promise<PaginationResponse<GameDataResponse>> {
-    return this.gameDataService.findAll(req.user.workspaceName, page, limit);
+    return this.gameDataService.findAll(
+      req.user.workspaceName,
+      page,
+      limit,
+      +gameId,
+    );
   }
 
   @Get('/data/entries/:id')
