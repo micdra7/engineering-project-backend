@@ -44,17 +44,4 @@ export class CallsGateway {
     client.leave(room);
     client.disconnect();
   }
-
-  @SubscribeMessage('disconnect')
-  async handleDisconnect(@ConnectedSocket() client: Socket) {
-    client.disconnect(true);
-    const currentUser = this.activeUsers.find(
-      user => user.socketId === client.id,
-    );
-    this.activeUsers = this.activeUsers.filter(
-      user => user.socketId !== client.id,
-    );
-    client.broadcast.emit('user-disconnected', { user: currentUser.id });
-    client.disconnect();
-  }
 }
