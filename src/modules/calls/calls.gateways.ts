@@ -5,9 +5,12 @@ import {
   WebSocketGateway,
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
+import { GameResultService } from '../games/gameResult.service';
 
 @WebSocketGateway({ cors: { origin: '*' } })
 export class CallsGateway {
+  constructor(private readonly gameResultService: GameResultService) {}
+
   private activeUsers: { room: string; id: string; socketId: string }[] = [];
 
   @SubscribeMessage('joinRoom')
@@ -29,6 +32,43 @@ export class CallsGateway {
       client.join(room);
       client.to(room).emit('user-connected', {
         user: id,
+      });
+    }
+  }
+
+  @SubscribeMessage('sendGameData')
+  async handleSend(
+    @MessageBody('data') data: string,
+    @MessageBody('room') room: string,
+    @ConnectedSocket() client: Socket,
+  ) {
+    client.to(room).emit('gameData', { data });
+  }
+
+  @SubscribeMessage('sendGameFinish')
+  async handleFinish(
+    @MessageBody('room') room: string,
+    @ConnectedSocket() client: Socket,
+  ) {
+    client.to(room).emit('gameFinish');
+  }
+
+  @SubscribeMessage('sendGameScore')
+  async handleScoreSave(
+    @MessageBody('id') id: string,
+    @MessageBody('gameId') gameId: string,
+    @MessageBody('room') room: string,
+    @MessageBody('score') score: number,
+  ) {
+    const existingUser = this.activeUsers?.find(
+      user => user.room === room && user.id === id,
+    );
+
+    if (!!existingUser) {
+      this.gameResultService.create({
+        gameId: +gameId,
+        userId: +existingUser.id,
+        result: score,
       });
     }
   }
