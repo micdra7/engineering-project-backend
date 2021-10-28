@@ -36,6 +36,15 @@ export class CallsGateway {
     }
   }
 
+  @SubscribeMessage('startGame')
+  async handleStart(
+    @MessageBody('gameId') gameId: number,
+    @MessageBody('room') room: string,
+    @ConnectedSocket() client: Socket,
+  ) {
+    client.to(room).emit('gameStart', { gameId });
+  }
+
   @SubscribeMessage('sendGameData')
   async handleSend(
     @MessageBody('data') data: string,
