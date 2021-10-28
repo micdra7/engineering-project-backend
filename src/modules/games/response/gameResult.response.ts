@@ -14,5 +14,8 @@ export class GameResultResponse {
   gameId: number;
 
   @ApiProperty()
+  gameName: string;
+
+  @ApiProperty()
   userId: number;
 }

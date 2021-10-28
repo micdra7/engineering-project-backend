@@ -35,6 +35,7 @@ export class GameResultService {
       result: gameResult.result,
       createdAt: gameResult.createdAt,
       gameId: game.id,
+      gameName: game.name,
       userId: user.id,
     };
   }
@@ -43,14 +44,16 @@ export class GameResultService {
     workspaceName: string,
     page: number,
     limit: number,
+    userId: number,
   ): Promise<PaginationResponse<GameResultResponse>> {
     const [items, count] = await this.gameResultRepository
       .createQueryBuilder('gameResult')
       .innerJoinAndSelect('gameResult.game', 'game')
       .innerJoinAndSelect('gameResult.user', 'user')
       .innerJoinAndSelect('game.workspace', 'workspace')
-      .where('workspace.name := workspaceName', { workspaceName })
-      .orderBy('gameResult.id', 'ASC')
+      .where('workspace.name = :workspaceName', { workspaceName })
+      .andWhere('user.id = :userId', { userId })
+      .orderBy('gameResult.createdAt', 'DESC')
       .skip((page - 1) * limit)
       .take(limit)
       .getManyAndCount();
@@ -68,6 +71,7 @@ export class GameResultService {
         result: val.result,
         createdAt: val.createdAt,
         gameId: val.game.id,
+        gameName: val.game.name,
         userId: val.user.id,
       })),
       meta,
@@ -85,6 +89,7 @@ export class GameResultService {
       result: gameResult.result,
       createdAt: gameResult.createdAt,
       gameId: gameResult.game.id,
+      gameName: gameResult.game.name,
       userId: gameResult.user.id,
     };
   }

@@ -181,7 +181,12 @@ export class GamesController {
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
     @Req() req,
   ): Promise<PaginationResponse<GameResultResponse>> {
-    return this.gameResultService.findAll(req.user.workspaceName, page, limit);
+    return this.gameResultService.findAll(
+      req.user.workspaceName,
+      page,
+      limit,
+      req.user.id,
+    );
   }
 
   @Get('/result/entries/:id')
