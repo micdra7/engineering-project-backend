@@ -65,6 +65,7 @@ export class CallsGateway {
   @SubscribeMessage('sendGameScore')
   async handleScoreSave(
     @MessageBody('id') id: string,
+    @MessageBody('userId') userId: number,
     @MessageBody('gameId') gameId: string,
     @MessageBody('room') room: string,
     @MessageBody('score') score: number,
@@ -76,7 +77,7 @@ export class CallsGateway {
     if (!!existingUser) {
       this.gameResultService.create({
         gameId: +gameId,
-        userId: +existingUser.id,
+        userId,
         result: score,
       });
     }

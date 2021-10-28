@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationResponse } from '../../utils/pagination.response';
 import { Repository } from 'typeorm';
@@ -107,6 +107,10 @@ export class GamesService {
   }
 
   findFile(fileId: string): ReadStream {
+    if (fileId.includes('undefined')) {
+      throw new BadRequestException('Could not find file');
+    }
+
     const file = createReadStream(
       join(`${process.cwd()}/uploads/games/`, fileId),
     );
