@@ -1,8 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 
-export class CreateGameDto {
+export class CreateGameDataDto {
   @ApiProperty()
   @IsNotEmpty()
-  name: string;
+  gameId: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  data: Record<string, unknown>;
 }

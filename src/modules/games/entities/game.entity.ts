@@ -17,6 +17,9 @@ export class Game {
   @Column()
   name: string;
 
+  @Column()
+  filepath: string;
+
   @OneToMany(() => GameData, gameData => gameData.game)
   gameDatas: GameData[];
 

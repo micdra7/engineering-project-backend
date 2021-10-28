@@ -7,8 +7,8 @@ export class GameResult {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'json' })
-  result: Record<string, unknown>;
+  @Column()
+  result: number;
 
   @Column()
   createdAt: Date;
