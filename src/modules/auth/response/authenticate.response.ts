@@ -3,6 +3,9 @@ import { UserWorkspacesResponse } from '../../workspaces/responses/userWorkspace
 
 export class AuthenticateResponse {
   @ApiProperty()
+  userId: number;
+
+  @ApiProperty()
   accessToken: string;
 
   @ApiProperty()
