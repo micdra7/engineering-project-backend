@@ -10,7 +10,6 @@ import { TasksModule } from './modules/tasks/tasks.module';
 import { UsersModule } from './modules/users/users.module';
 import { WorkspacesModule } from './modules/workspaces/workspaces.module';
 import { DashboardModule } from './dashboard/dashboard.module';
-import { DashboardModule } from './dashboard/dashboard.module';
 import configuration from './utils/configuration';
 
 @Module({
