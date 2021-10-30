@@ -26,7 +26,7 @@ export class DashboardController {
     @Req() req,
   ): Promise<PaginationResponse<TaskItemResponse>> {
     return this.dashboardService.findTasks(
-      req.user.id,
+      +req.user.id,
       req.user.workspaceName,
       page,
       limit,
@@ -40,6 +40,6 @@ export class DashboardController {
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
     @Req() req,
   ): Promise<PaginationResponse<CallResponse>> {
-    return this.dashboardService.findCalls(req.user.id, page, limit);
+    return this.dashboardService.findCalls(+req.user.id, page, limit);
   }
 }
