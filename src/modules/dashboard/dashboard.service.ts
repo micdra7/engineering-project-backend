@@ -72,6 +72,7 @@ export class DashboardService {
       .where('workspace.name = :workspaceName', { workspaceName })
       .andWhere('task.isDeleted = :isDeleted', { isDeleted: null })
       .andWhere('task.finishDate >= :finishDate', { startDate: new Date() })
+      .andWhere('user.id = :userId', { userId })
       .orderBy('task.finishDate', 'ASC')
       .skip((page - 1) * limit)
       .take(limit)
