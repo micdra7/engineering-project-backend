@@ -39,7 +39,7 @@ export class SeederService {
     private workspaceRepository: Repository<Workspace>,
   ) {}
 
-  async seed() {
+  async seed(): Promise<void> {
     const { workspaces } = await this.createUsersWithWorkspaces();
     await this.createTaskLists(workspaces);
   }

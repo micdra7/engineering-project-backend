@@ -84,18 +84,17 @@ export class GamesController {
     description: 'Returns selected game',
     type: GameResponse,
   })
-  findOne(@Param('id') id: string): Promise<GameResponse> {
+  async findOne(@Param('id') id: string): Promise<GameResponse> {
     return this.gamesService.findOne(+id);
   }
 
   @Get('/file/:id')
   @ApiOkResponse({
     description: 'Returns selected file',
-    type: GameResponse,
   })
   @Public()
   @Header('Content-Type', 'application/javascript')
-  findOneFile(@Param('id') id: string, @Res() res) {
+  async findOneFile(@Param('id') id: string, @Res() res): Promise<void> {
     const stream = this.gamesService.findFile(id);
 
     stream.pipe(res);
@@ -107,7 +106,7 @@ export class GamesController {
     type: GameResponse,
   })
   @UseInterceptors(FileInterceptor('file', multerOptions))
-  update(
+  async update(
     @Param('id') id: string,
     @Body() dto: UpdateGameDto,
     @UploadedFile() file: Express.Multer.File,

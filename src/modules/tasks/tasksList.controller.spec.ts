@@ -125,7 +125,7 @@ describe('TasksListsController', () => {
       },
     };
 
-    const actual = await controller.getAll(1, 10, {
+    const actual = await controller.findAll(1, 10, {
       user: { workspaceName: 'Test List' },
     });
 
@@ -138,7 +138,7 @@ describe('TasksListsController', () => {
       name: 'Test List',
     };
 
-    const actual = await controller.getOne('1', {
+    const actual = await controller.findOne('1', {
       user: { workspaceName: 'Test List' },
     });
 

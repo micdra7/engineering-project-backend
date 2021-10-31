@@ -48,7 +48,7 @@ export class TasksListsController {
 
   @Get()
   @ApiPaginatedResponse(TaskListItemResponse, 'List is successfully fetched')
-  async getAll(
+  async findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
     @Req() req,
@@ -61,7 +61,7 @@ export class TasksListsController {
     TaskListItemResponse,
     'List with deleted tasks is successfully fetched',
   )
-  async getAllDeleted(
+  async findAllDeleted(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
     @Req() req,
@@ -78,7 +78,7 @@ export class TasksListsController {
     description: 'Returns selected taskList',
     type: TaskListItemResponse,
   })
-  async getOne(
+  async findOne(
     @Param('id') id: string,
     @Req() req,
   ): Promise<TaskListItemResponse> {

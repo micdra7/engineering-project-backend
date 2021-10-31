@@ -49,7 +49,7 @@ export class WorkspacesService {
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      workspaces: await this.usersService.getUserWorkspaces(user.id),
+      workspaces: await this.usersService.findUserWorkspaces(user.id),
     };
   }
 

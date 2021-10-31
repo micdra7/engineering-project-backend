@@ -45,8 +45,8 @@ export class UsersController {
   @ApiBadRequestResponse({
     description: 'Email is already in use',
   })
-  create(@Body() createUserDto: CreateUserDto, @Req() req) {
-    return this.usersService.create(req.user.workspaceName, createUserDto);
+  async create(@Body() dto: CreateUserDto, @Req() req): Promise<User> {
+    return this.usersService.create(req.user.workspaceName, dto);
   }
 
   @Get()
@@ -56,7 +56,7 @@ export class UsersController {
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
     @Req() req,
   ): Promise<PaginationResponse<UsersListResponse>> {
-    return this.usersService.getAllWithPagination(
+    return this.usersService.findAllWithPagination(
       req.user.workspaceName,
       page,
       limit,
@@ -68,16 +68,19 @@ export class UsersController {
     description: 'Returns currently logged in user',
     type: User,
   })
-  findCurrent(@Req() req) {
+  async findCurrent(@Req() req): Promise<User> {
     return this.usersService.findOne(+req.user.id);
   }
 
   @Get('/:id')
   @ApiOkResponse({
     description: 'Returns user for given id',
-    type: User,
+    type: UsersListResponse,
   })
-  findOne(@Param('id') id: string, @Req() req) {
+  async findOne(
+    @Param('id') id: string,
+    @Req() req,
+  ): Promise<UsersListResponse> {
     return this.usersService.findOneInWorkspace(+id, req.user.workspaceName);
   }
 
@@ -87,7 +90,7 @@ export class UsersController {
     type: User,
   })
   @HttpCode(HttpStatus.OK)
-  checkIfUsersExists(@Body() dto: FindByEmailDto): Promise<User> {
+  async checkIfUsersExists(@Body() dto: FindByEmailDto): Promise<User> {
     return this.usersService.findByEmail(dto.email);
   }
 
@@ -99,12 +102,12 @@ export class UsersController {
   @ApiBadRequestResponse({
     description: 'User not found or email is already in use (if being changed)',
   })
-  update(
+  async update(
     @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() dto: UpdateUserDto,
     @Req() req,
-  ) {
-    return this.usersService.update(+id, updateUserDto, req.user.workspaceName);
+  ): Promise<UpdateUserResponse> {
+    return this.usersService.update(+id, dto, req.user.workspaceName);
   }
 
   @Patch('/current/profile')
@@ -115,14 +118,17 @@ export class UsersController {
   @ApiBadRequestResponse({
     description: 'User not found or email is already in use (if being changed)',
   })
-  updateCurrent(@Body() updateUserDto: UpdateUserDto, @Req() req) {
-    return this.usersService.update(+req.user.id, updateUserDto);
+  async updateCurrent(
+    @Body() dto: UpdateUserDto,
+    @Req() req,
+  ): Promise<UpdateUserResponse> {
+    return this.usersService.update(+req.user.id, dto);
   }
 
   @Delete('/:id')
   @ApiOkResponse({ description: 'User was removed' })
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  async remove(@Param('id') id: string): Promise<void> {
+    await this.usersService.remove(+id);
   }
 
   @Patch('/:id/change-status')
@@ -130,7 +136,7 @@ export class UsersController {
     description: 'User activated / deactivated',
     type: UsersListResponse,
   })
-  async changeStatus(@Body() dto: ChangeStatusDto) {
+  async changeStatus(@Body() dto: ChangeStatusDto): Promise<UsersListResponse> {
     return this.usersService.changeStatus(dto);
   }
 }
