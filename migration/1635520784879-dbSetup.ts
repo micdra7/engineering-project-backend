@@ -1,21 +1,21 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class dbUpdate1633863357695 implements MigrationInterface {
-    name = 'dbUpdate1633863357695'
+export class dbSetup1635520784879 implements MigrationInterface {
+    name = 'dbSetup1635520784879'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE TABLE "task" ("id" SERIAL NOT NULL, "name" character varying NOT NULL, "description" character varying NOT NULL, "startDate" TIMESTAMP NOT NULL, "finishDate" TIMESTAMP NOT NULL, "isDone" boolean NOT NULL, "parentTaskId" integer, "taskListId" integer, CONSTRAINT "PK_fb213f79ee45060ba925ecd576e" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "task" ("id" SERIAL NOT NULL, "name" character varying NOT NULL, "description" character varying NOT NULL, "startDate" TIMESTAMP NOT NULL, "finishDate" TIMESTAMP, "isDeleted" boolean, "isDone" boolean, "parentTaskId" integer, "taskListId" integer, CONSTRAINT "PK_fb213f79ee45060ba925ecd576e" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "task_list" ("id" SERIAL NOT NULL, "name" character varying NOT NULL, "workspaceId" integer, CONSTRAINT "PK_e9f70d01f59395c1dfdc633ae37" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "game_data" ("id" SERIAL NOT NULL, "data" json NOT NULL, "gameId" integer, CONSTRAINT "PK_a9893e619362ce1bb2d616f4390" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "game_result" ("id" SERIAL NOT NULL, "result" json NOT NULL, "createdAt" TIMESTAMP NOT NULL, "gameId" integer, "userId" integer, CONSTRAINT "PK_0f05afdea1542af63c3027f7534" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "game" ("id" SERIAL NOT NULL, "name" character varying NOT NULL, "workspaceId" integer, CONSTRAINT "PK_352a30652cd352f552fef73dec5" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "game_result" ("id" SERIAL NOT NULL, "result" integer NOT NULL, "createdAt" TIMESTAMP NOT NULL, "gameId" integer, "userId" integer, CONSTRAINT "PK_0f05afdea1542af63c3027f7534" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "game" ("id" SERIAL NOT NULL, "name" character varying NOT NULL, "filepath" character varying NOT NULL, "workspaceId" integer, CONSTRAINT "PK_352a30652cd352f552fef73dec5" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "workspace" ("id" SERIAL NOT NULL, "name" character varying NOT NULL, "isDefault" boolean NOT NULL DEFAULT false, CONSTRAINT "PK_ca86b6f9b3be5fe26d307d09b49" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "user_workspaces" ("id" SERIAL NOT NULL, "userId" integer NOT NULL, "role" integer NOT NULL, "workspaceId" integer NOT NULL, CONSTRAINT "PK_3c26b2f35801149e8f0af2e4fb0" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "message" ("id" SERIAL NOT NULL, "content" character varying NOT NULL, "filePath" character varying NOT NULL, "sendTime" TIMESTAMP NOT NULL, "userId" integer, "chatroomId" integer, CONSTRAINT "PK_ba01f0a3e0123651915008bc578" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "chatroom" ("id" SERIAL NOT NULL, "name" character varying NOT NULL, CONSTRAINT "PK_1e5ce0a999152e29952194d01ff" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "user_chatrooms" ("id" SERIAL NOT NULL, "userId" integer NOT NULL, "chatroomId" integer NOT NULL, CONSTRAINT "PK_b35af7c7a0e632bde96954ae18d" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "user" ("id" SERIAL NOT NULL, "email" character varying NOT NULL, "firstName" character varying NOT NULL, "lastName" character varying NOT NULL, "passwordHash" character varying NOT NULL, "isActive" boolean NOT NULL DEFAULT true, CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "call" ("id" SERIAL NOT NULL, "name" character varying NOT NULL, "startDate" TIMESTAMP NOT NULL, "finishDate" TIMESTAMP NOT NULL, CONSTRAINT "PK_2098af0169792a34f9cfdd39c47" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "call" ("id" SERIAL NOT NULL, "name" character varying NOT NULL, "generatedCode" character varying NOT NULL, "startDate" TIMESTAMP NOT NULL, "finishDate" TIMESTAMP NOT NULL, CONSTRAINT "PK_2098af0169792a34f9cfdd39c47" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "user_tasks_task" ("userId" integer NOT NULL, "taskId" integer NOT NULL, CONSTRAINT "PK_5c112b153701f554843915f643f" PRIMARY KEY ("userId", "taskId"))`);
         await queryRunner.query(`CREATE INDEX "IDX_1fb6a986133f8f6cafb3d4fb31" ON "user_tasks_task" ("userId") `);
         await queryRunner.query(`CREATE INDEX "IDX_9bcb8e9773d79c9874a61f79c3" ON "user_tasks_task" ("taskId") `);
