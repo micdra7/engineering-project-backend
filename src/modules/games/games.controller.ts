@@ -70,7 +70,6 @@ export class GamesController {
   }
 
   @Get()
-  @Public()
   @ApiPaginatedResponse(GameResponse, 'List is successfully fetched')
   async findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
@@ -80,7 +79,19 @@ export class GamesController {
     return this.gamesService.findAll(req.user.workspaceName, page, limit);
   }
 
+  @Get('/public')
+  @Public()
+  @ApiPaginatedResponse(GameResponse, 'List is successfully fetched')
+  async findAllPublic(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
+    @Query('workspaceName') workspaceName: string,
+  ): Promise<PaginationResponse<GameResponse>> {
+    return this.gamesService.findAll(workspaceName, page, limit);
+  }
+
   @Get(':id')
+  @Public()
   @ApiOkResponse({
     description: 'Returns selected game',
     type: GameResponse,
@@ -141,6 +152,18 @@ export class GamesController {
       limit,
       +gameId,
     );
+  }
+
+  @Get('/data/entries/public')
+  @Public()
+  @ApiPaginatedResponse(GameDataResponse, 'List is successfully fetched')
+  async findAllDataPublic(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
+    @Query('gameId') gameId: string,
+    @Query('workspaceName') workspaceName: string,
+  ): Promise<PaginationResponse<GameDataResponse>> {
+    return this.gameDataService.findAll(workspaceName, page, limit, +gameId);
   }
 
   @Get('/data/entries/:id')
