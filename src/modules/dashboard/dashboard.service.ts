@@ -66,17 +66,19 @@ export class DashboardService {
     const [items, count] = await this.taskRepository
       .createQueryBuilder('task')
       .innerJoinAndSelect('task.users', 'users')
-      .innerJoinAndSelect('task.parentTask', 'parentTask')
+      .leftJoinAndSelect('task.parentTask', 'parentTask')
       .innerJoinAndSelect('task.taskList', 'taskList')
       .innerJoinAndSelect('taskList.workspace', 'workspace')
       .where('workspace.name = :workspaceName', { workspaceName })
-      .andWhere('task.isDeleted = :isDeleted', { isDeleted: null })
-      .andWhere('task.finishDate >= :finishDate', { finishDate: new Date() })
       .andWhere('users.id = :userId', { userId })
+      .andWhere('task.isDeleted is null')
+      .andWhere('task.finishDate > :finishDate', { finishDate: new Date() })
       .orderBy('task.finishDate', 'ASC')
       .skip((page - 1) * limit)
       .take(limit)
       .getManyAndCount();
+
+    console.log(items);
 
     const meta = {
       currentPage: page,
