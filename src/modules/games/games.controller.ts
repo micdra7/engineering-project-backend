@@ -70,6 +70,7 @@ export class GamesController {
   }
 
   @Get()
+  @Public()
   @ApiPaginatedResponse(GameResponse, 'List is successfully fetched')
   async findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
