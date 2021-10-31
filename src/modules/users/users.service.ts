@@ -90,7 +90,7 @@ export class UsersService {
       lastName: user.lastName,
       email: user.email,
       isActive: user.isActive,
-      role: (await this.getUserWorkspaces(id)).filter(
+      role: (await this.findUserWorkspaces(id)).filter(
         w => w.workspaceName === workspaceName,
       )[0].role,
     };
@@ -143,7 +143,7 @@ export class UsersService {
       !!workspaceName &&
       (updateUserDto.role === 0 || updateUserDto.role === 1)
     ) {
-      const userWorkspaces = await this.getUserWorkspaces(id);
+      const userWorkspaces = await this.findUserWorkspaces(id);
       const currentWorkspace = userWorkspaces.filter(
         w => w.workspaceName === workspaceName,
       )[0];
@@ -162,7 +162,7 @@ export class UsersService {
       email: updateUserDto.email,
       firstName: updateUserDto.firstName,
       lastName: updateUserDto.lastName,
-      workspaces: await this.getUserWorkspaces(id),
+      workspaces: await this.findUserWorkspaces(id),
     };
   }
 
@@ -174,7 +174,7 @@ export class UsersService {
     return this.userRepository.findOne({ where: { email } });
   }
 
-  async getUserWorkspaces(userId: number): Promise<UserWorkspacesResponse[]> {
+  async findUserWorkspaces(userId: number): Promise<UserWorkspacesResponse[]> {
     const userWorkspaces = await this.userWorkspacesRepository.find({
       where: { userId },
       relations: ['workspace'],
@@ -190,7 +190,7 @@ export class UsersService {
     });
   }
 
-  async getAllWithPagination(
+  async findAllWithPagination(
     workspaceName: string,
     page: number,
     limit: number,

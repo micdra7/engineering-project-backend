@@ -12,7 +12,7 @@ export class SeederController {
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ description: 'Database is successfully seeded' })
   @Public()
-  async seed() {
+  async seed(): Promise<void> {
     await this.seederService.removeAll();
     await this.seederService.seed();
   }

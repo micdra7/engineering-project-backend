@@ -48,7 +48,7 @@ export class AuthService {
   }
 
   async login(user: User): Promise<AuthenticateResponse> {
-    const workspaces = await this.usersService.getUserWorkspaces(user.id);
+    const workspaces = await this.usersService.findUserWorkspaces(user.id);
     const defaultWorkspace = workspaces.filter(w => w.isDefault)[0];
     const payload = {
       email: user.email,
@@ -92,7 +92,7 @@ export class AuthService {
         wsp: string;
       }>(dto.refreshToken, { secret: this.configService.get('jwt.secret') });
 
-      const workspaces = await this.usersService.getUserWorkspaces(user.id);
+      const workspaces = await this.usersService.findUserWorkspaces(user.id);
       const currentWorkspace: UserWorkspacesResponse = workspaces.filter(
         w => w.workspaceName === decoded.wsp,
       )[0];
@@ -149,7 +149,7 @@ export class AuthService {
         );
       }
 
-      const userWorkspaces = await this.usersService.getUserWorkspaces(userId);
+      const userWorkspaces = await this.usersService.findUserWorkspaces(userId);
 
       if (!userWorkspaces.some(w => w.id === dto.workspaceId)) {
         throw new BadRequestException(

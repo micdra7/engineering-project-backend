@@ -46,7 +46,7 @@ export class TasksController {
 
   @Get()
   @ApiPaginatedResponse(TaskItemResponse, 'List is successfully fetched')
-  async getAll(
+  async findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
     @Req() req,
@@ -60,7 +60,7 @@ export class TasksController {
     type: TaskItemResponse,
   })
   @ApiBadRequestResponse()
-  async getOne(@Param('id') id: string): Promise<TaskItemResponse> {
+  async findOne(@Param('id') id: string): Promise<TaskItemResponse> {
     return this.tasksService.findOne(+id);
   }
 
