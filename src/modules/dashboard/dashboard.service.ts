@@ -78,8 +78,6 @@ export class DashboardService {
       .take(limit)
       .getManyAndCount();
 
-    console.log(items);
-
     const meta = {
       currentPage: page,
       itemCount: limit,
