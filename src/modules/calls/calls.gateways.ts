@@ -91,7 +91,19 @@ export class CallsGateway {
   ): Promise<void> {
     this.activeUsers = this.activeUsers.filter(user => user.id !== id);
     client.to(room).emit('user-disconnected', { user: id });
-    client.leave(room);
     client.disconnect();
+  }
+
+  async handleDisconnect(@ConnectedSocket() client: Socket) {
+    this.activeUsers = this.activeUsers.filter(
+      user => user.socketId !== client.id,
+    );
+
+    if (this.activeUsers?.length > 0) {
+      client
+        .to(this.activeUsers[0].room)
+        .emit('user-disconnected', { user: this.activeUsers[0].id });
+      client.disconnect();
+    }
   }
 }
