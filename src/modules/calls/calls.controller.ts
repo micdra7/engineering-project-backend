@@ -19,6 +19,7 @@ import {
 } from '@nestjs/swagger';
 import { ApiPaginatedResponse } from '../../utils/pagination.decorator';
 import { PaginationResponse } from '../../utils/pagination.response';
+import { Public } from '../auth/decorator/public.decorator';
 import { CallsService } from './calls.service';
 import { CreateCallDto } from './dto/create-call.dto';
 import { UpdateCallDto } from './dto/update-call.dto';
@@ -61,6 +62,7 @@ export class CallsController {
   }
 
   @Get('uuid/:uuid')
+  @Public()
   @ApiOkResponse({
     description: 'Returns selected call',
     type: CallResponse,

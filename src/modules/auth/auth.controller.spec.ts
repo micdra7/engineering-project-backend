@@ -73,19 +73,19 @@ describe('AuthController', () => {
                   );
                 },
               ),
-            switchWorkspace: jest
-              .fn()
-              .mockImplementation(
-                (
-                  userId: number,
-                  dto: SwitchWorkspaceDto,
-                ): Promise<RefreshResponse> => {
-                  return Promise.resolve({
-                    accessToken: 'newAccessToken',
-                    refreshToken: 'newRefreshToken',
-                  });
-                },
-              ),
+            switchWorkspace: jest.fn().mockImplementation(
+              (
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                _userId: number,
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                _dto: SwitchWorkspaceDto,
+              ): Promise<RefreshResponse> => {
+                return Promise.resolve({
+                  accessToken: 'newAccessToken',
+                  refreshToken: 'newRefreshToken',
+                });
+              },
+            ),
           },
         },
       ],

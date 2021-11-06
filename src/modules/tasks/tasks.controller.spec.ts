@@ -341,7 +341,7 @@ describe('TasksController', () => {
       },
     };
 
-    const actual = await controller.getAll(1, 10, {
+    const actual = await controller.findAll(1, 10, {
       user: { workspaceName: 'Test Workspace' },
     });
 
@@ -361,13 +361,13 @@ describe('TasksController', () => {
       parentTaskId: 0,
     };
 
-    const actual = await controller.getOne('1');
+    const actual = await controller.findOne('1');
 
     expect(actual).toStrictEqual(expected);
   });
 
   it('getOne - should return null if task with given id is not found', async () => {
-    const actual = await controller.getOne('0');
+    const actual = await controller.findOne('0');
 
     expect(actual).toBeNull();
   });

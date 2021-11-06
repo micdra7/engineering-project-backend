@@ -66,6 +66,7 @@ export class TasksService {
       parentTaskId: dto.parentTaskId ?? 0,
       isDone: task.isDone ?? false,
       assignedUserIds: dto.assignedUserIds,
+      isDeleted: task.isDeleted ?? false,
     };
   }
 
@@ -81,6 +82,7 @@ export class TasksService {
       .innerJoinAndSelect('task.taskList', 'taskList')
       .innerJoinAndSelect('taskList.workspace', 'workspace')
       .where('workspace.name = :workspaceName', { workspaceName })
+      .andWhere('task.isDeleted = :isDeleted', { isDeleted: null })
       .orderBy('task.id', 'ASC')
       .skip((page - 1) * limit)
       .take(limit)
@@ -104,6 +106,7 @@ export class TasksService {
         parentTaskId: val.parentTask?.id ?? 0,
         isDone: val.isDone ?? false,
         assignedUserIds: val.users.map(u => u.id),
+        isDeleted: val.isDeleted ?? false,
       })),
       meta,
     };
@@ -126,6 +129,7 @@ export class TasksService {
         parentTaskId: task.parentTask?.id ?? 0,
         isDone: task.isDone ?? false,
         assignedUserIds: task.users.map(u => u.id),
+        isDeleted: task.isDeleted ?? false,
         childrenTasks: task.childrenTasks?.map(t => ({
           id: t.id,
           name: t.name,
@@ -136,6 +140,7 @@ export class TasksService {
           parentTaskId: t.parentTask?.id ?? 0,
           isDone: t.isDone ?? false,
           assignedUserIds: t.users?.map(u => u.id),
+          isDeleted: t.isDeleted ?? false,
         })),
       }
     );
@@ -170,6 +175,7 @@ export class TasksService {
       parentTaskId: task.parentTask?.id ?? 0,
       isDone: task.isDone ?? false,
       assignedUserIds: task.users.map(u => u.id),
+      isDeleted: task.isDeleted ?? false,
     };
   }
 
@@ -178,7 +184,7 @@ export class TasksService {
 
     const task = await this.taskRepository.findOne({
       where: { id },
-      relations: ['users', 'parentTask', 'taskList', 'childrenTasks'],
+      relations: ['parentTask', 'taskList', 'childrenTasks'],
     });
     if (!task) {
       throw new BadRequestException('Task for given id does not exist');
@@ -198,7 +204,9 @@ export class TasksService {
       }
     }
 
-    await this.taskRepository.remove(tasksToRemove);
+    for await (const task of tasksToRemove) {
+      await this.taskRepository.update(task.id, { isDeleted: true });
+    }
   }
 
   async changeList(dto: ChangeListDto): Promise<TaskItemResponse> {
@@ -229,6 +237,7 @@ export class TasksService {
       parentTaskId: task.parentTask?.id ?? 0,
       isDone: task.isDone ?? false,
       assignedUserIds: task.users.map(u => u.id),
+      isDeleted: task.isDeleted ?? false,
     };
   }
 
@@ -259,6 +268,7 @@ export class TasksService {
       parentTaskId: task.parentTask?.id ?? 0,
       isDone: task.isDone ?? false,
       assignedUserIds: task.users.map(u => u.id),
+      isDeleted: task.isDeleted ?? false,
     };
   }
 }

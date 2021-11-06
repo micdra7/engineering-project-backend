@@ -26,6 +26,9 @@ export class Task {
   @Column({ nullable: true })
   finishDate?: Date;
 
+  @Column({ nullable: true })
+  isDeleted?: boolean;
+
   // only used if object is a subtask
   @Column({ nullable: true })
   isDone?: boolean;

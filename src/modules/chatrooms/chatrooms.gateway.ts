@@ -47,7 +47,7 @@ export class ChatroomsGateway {
   }
 
   @SubscribeMessage('disconnect')
-  async handleDisconnect(@ConnectedSocket() client: Socket) {
+  async handleDisconnect(@ConnectedSocket() client: Socket): Promise<void> {
     client.disconnect(true);
   }
 }

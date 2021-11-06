@@ -16,11 +16,13 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { PaginationResponse } from '../../utils/pagination.response';
 import { ApiPaginatedResponse } from '../../utils/pagination.decorator';
 import { ChatroomsService } from './chatrooms.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 import { ChatroomResponse } from './response/chatroom.response';
+import { MessageResponse } from './response/message.response';
 
 @ApiTags('Chatrooms')
 @Controller('chatrooms')
@@ -35,17 +37,17 @@ export class ChatroomsController {
   @ApiBadRequestResponse({
     description: 'Validation error',
   })
-  create(@Body() createChatroomDto: CreateChatroomDto) {
-    return this.chatroomsService.create(createChatroomDto);
+  async create(@Body() dto: CreateChatroomDto): Promise<ChatroomResponse> {
+    return this.chatroomsService.create(dto);
   }
 
   @Get()
   @ApiPaginatedResponse(ChatroomResponse, 'List is successfully fetched')
-  findAll(
+  async findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
     @Req() req,
-  ) {
+  ): Promise<PaginationResponse<ChatroomResponse>> {
     return this.chatroomsService.findAll(+req.user.id, page, limit);
   }
 
@@ -54,7 +56,7 @@ export class ChatroomsController {
     description: 'Returns selected chatroom',
     type: ChatroomResponse,
   })
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<ChatroomResponse> {
     return this.chatroomsService.findOne(+id);
   }
 
@@ -66,17 +68,17 @@ export class ChatroomsController {
   @ApiBadRequestResponse({
     description: 'Validation error',
   })
-  update(@Body() updateChatroomDto: UpdateChatroomDto) {
-    return this.chatroomsService.update(updateChatroomDto);
+  async update(@Body() dto: UpdateChatroomDto): Promise<ChatroomResponse> {
+    return this.chatroomsService.update(dto);
   }
 
   @Get('/messages/:id')
-  @ApiPaginatedResponse(ChatroomResponse, 'List is successfully fetched')
-  findAllMessages(
+  @ApiPaginatedResponse(MessageResponse, 'List is successfully fetched')
+  async findAllMessages(
     @Param('id') id: string,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
-  ) {
+  ): Promise<PaginationResponse<MessageResponse>> {
     return this.chatroomsService.findMessages(+id, page, limit);
   }
 }

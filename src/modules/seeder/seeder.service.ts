@@ -14,6 +14,7 @@ import { User } from '../users/entities/user.entity';
 import { Role } from '../workspaces/entities/role.enum';
 import { UserWorkspaces } from '../workspaces/entities/userWorkspaces.entity';
 import { Workspace } from '../workspaces/entities/workspace.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class SeederService {
@@ -39,9 +40,13 @@ export class SeederService {
     private workspaceRepository: Repository<Workspace>,
   ) {}
 
-  async seed() {
-    const { workspaces } = await this.createUsersWithWorkspaces();
-    await this.createTaskLists(workspaces);
+  async seed(): Promise<void> {
+    const { workspaces, users } = await this.createUsersWithWorkspaces();
+    const { taskLists } = await this.createTaskLists(workspaces);
+    await this.createTasks(taskLists, users);
+    await this.createChatroom(users);
+    await this.createCalls(users);
+    await this.createGames(workspaces);
   }
 
   async removeAll() {
@@ -163,5 +168,159 @@ export class SeederService {
     const dbTaskLists = await this.taskListRepository.save(taskLists);
 
     return { taskLists: dbTaskLists };
+  }
+
+  private async createTasks(taskLists: TaskList[], users: User[]) {
+    const currentDate = new Date();
+    const date7DaysAfter = new Date();
+    date7DaysAfter.setDate(date7DaysAfter.getDate() + 7);
+
+    const tasks: Partial<Task>[] = [
+      {
+        name: 'Test task 1',
+        description: 'Test task 1 description',
+        startDate: currentDate,
+        finishDate: date7DaysAfter,
+        taskList: taskLists[0],
+        users: [users[0], users[1]],
+      },
+      {
+        name: 'Test task 2',
+        description: 'Test task 2 description',
+        startDate: currentDate,
+        finishDate: date7DaysAfter,
+        taskList: taskLists[1],
+        users: [users[0]],
+      },
+    ];
+
+    const dbTasks = await this.taskRepository.save(tasks);
+
+    return { tasks: dbTasks };
+  }
+
+  private async createChatroom(users: User[]) {
+    const currentDate = new Date();
+
+    const chatrooms: Partial<Chatroom>[] = [
+      {
+        name: 'Test chatroom',
+      },
+    ];
+
+    const dbChatrooms = await this.chatroomRepository.save(chatrooms);
+
+    const messages: Partial<Message>[] = [
+      {
+        chatroom: dbChatrooms[0],
+        content: 'Test message 1',
+        user: users[0],
+        sendTime: currentDate,
+        filePath: '',
+      },
+      {
+        chatroom: dbChatrooms[0],
+        content: 'Test message 2',
+        user: users[1],
+        sendTime: currentDate,
+        filePath: '',
+      },
+    ];
+
+    const dbMessages = await this.messageRepository.save(messages);
+
+    const userChatrooms: Partial<UserChatrooms>[] = [
+      {
+        chatroom: dbChatrooms[0],
+        chatroomId: dbChatrooms[0].id,
+        user: users[0],
+        userId: users[0].id,
+      },
+      {
+        chatroom: dbChatrooms[0],
+        chatroomId: dbChatrooms[0].id,
+        user: users[1],
+        userId: users[1].id,
+      },
+    ];
+
+    const dbUserChatrooms = await this.userChatroomsRepository.save(
+      userChatrooms,
+    );
+
+    dbChatrooms[0].messages = dbMessages;
+    dbChatrooms[0].userChatrooms = dbUserChatrooms;
+    dbChatrooms.forEach(async dbChat => {
+      await this.chatroomRepository.update(dbChat.id, dbChat);
+    });
+
+    return {
+      chatrooms: dbChatrooms,
+      messages: dbMessages,
+      userChatrooms: dbUserChatrooms,
+    };
+  }
+
+  private async createCalls(users: User[]) {
+    const currentDate = new Date();
+    const date2HoursAfter = new Date();
+    date2HoursAfter.setHours(date2HoursAfter.getHours() + 2);
+
+    const calls: Partial<Call>[] = [
+      {
+        name: 'Test call',
+        generatedCode: uuidv4(),
+        users: [users[0], users[1]],
+        startDate: currentDate,
+        finishDate: date2HoursAfter,
+      },
+    ];
+
+    const dbCalls = await this.callRepository.save(calls);
+
+    return { calls: dbCalls };
+  }
+
+  private async createGames(workspaces: Workspace[]) {
+    const games: Partial<Game>[] = [
+      {
+        name: 'Quiz',
+        workspace: workspaces[0],
+        filepath: '',
+      },
+    ];
+
+    const dbGames = await this.gameRepository.save(games);
+
+    const gameDatas: Partial<GameData>[] = [
+      {
+        game: dbGames[0],
+        data: {
+          question: 'What does NPM stand for?',
+          answers: [
+            'New Personal Monkey',
+            'Node Package Manager',
+            'Neverending Pocket Money',
+            'Nice Pretty Mice',
+          ],
+          correctAnswerIndex: 1,
+        },
+      },
+      {
+        game: dbGames[0],
+        data: {
+          question: 'Which band was Freddie Mercury a member of?',
+          answers: ['Megadeth', 'Pantera', 'Black Sabbath', 'Queen'],
+          correctAnswerIndex: 3,
+        },
+      },
+    ];
+
+    const dbGameDatas = await this.gameDataRepository.save(gameDatas);
+
+    return {
+      games: dbGames,
+      gameDatas: dbGameDatas,
+    };
   }
 }
