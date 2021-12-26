@@ -47,14 +47,22 @@ describe('TaskListsService', () => {
             remove: jest.fn().mockImplementationOnce(() => Promise.resolve()),
             createQueryBuilder: jest.fn().mockReturnValue({
               innerJoinAndSelect: () => ({
-                where: () => ({
-                  orderBy: () => ({
-                    skip: () => ({
-                      take: () => ({
-                        getManyAndCount: () => [
-                          [{ id: 1, name: 'Test List' }],
-                          1,
-                        ],
+                leftJoinAndSelect: () => ({
+                  leftJoinAndSelect: () => ({
+                    leftJoinAndSelect: () => ({
+                      leftJoinAndSelect: () => ({
+                        where: () => ({
+                          orderBy: () => ({
+                            skip: () => ({
+                              take: () => ({
+                                getManyAndCount: () => [
+                                  [{ id: 1, name: 'Test List' }],
+                                  1,
+                                ],
+                              }),
+                            }),
+                          }),
+                        }),
                       }),
                     }),
                   }),
@@ -128,7 +136,7 @@ describe('TaskListsService', () => {
 
   it('findAll - should return a list of all task lists  (with pagination)', async () => {
     const expected: PaginationResponse<TaskListItemResponse> = {
-      data: [{ id: 1, name: 'Test List' }],
+      data: [{ id: 1, name: 'Test List', tasks: [] }],
       meta: {
         currentPage: 1,
         itemCount: 10,

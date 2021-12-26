@@ -11,9 +11,6 @@ export class Message {
   content: string;
 
   @Column()
-  filePath: string;
-
-  @Column()
   sendTime: Date;
 
   @ManyToOne(() => User, user => user.messages)
