@@ -26,6 +26,7 @@ describe('AuthController', () => {
               // eslint-disable-next-line @typescript-eslint/no-unused-vars
               (user: User): Promise<AuthenticateResponse> => {
                 return Promise.resolve({
+                  userId: 1,
                   accessToken: 'accessToken',
                   refreshToken: 'refreshToken',
                   workspaces: [

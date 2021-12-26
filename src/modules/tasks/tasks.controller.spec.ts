@@ -35,6 +35,7 @@ describe('TasksController', () => {
                   description: 'Test Task description',
                   startDate: date,
                   finishDate: null,
+                  isDeleted: false,
                   isDone: false,
                   childrenTasks: [],
                   parentTask: null,
@@ -61,6 +62,7 @@ describe('TasksController', () => {
                   startDate: date,
                   finishDate: null,
                   isDone: false,
+                  isDeleted: false,
                   childrenTasks: [],
                   parentTask: {
                     id: 1,
@@ -113,38 +115,41 @@ describe('TasksController', () => {
                   innerJoinAndSelect: () => ({
                     innerJoinAndSelect: () => ({
                       where: () => ({
-                        orderBy: () => ({
-                          skip: () => ({
-                            take: () => ({
-                              getManyAndCount: () => [
-                                [
-                                  {
-                                    id: 1,
-                                    name: 'Test Task',
-                                    description: 'Test Task description',
-                                    startDate: date,
-                                    finishDate: null,
-                                    isDone: false,
-                                    childrenTasks: [],
-                                    parentTask: null,
-                                    taskList: {
+                        andWhere: () => ({
+                          orderBy: () => ({
+                            skip: () => ({
+                              take: () => ({
+                                getManyAndCount: () => [
+                                  [
+                                    {
                                       id: 1,
-                                      name: 'Test List',
-                                      workspace: {
+                                      name: 'Test Task',
+                                      description: 'Test Task description',
+                                      startDate: date,
+                                      finishDate: null,
+                                      isDone: false,
+                                      isDeleted: false,
+                                      childrenTasks: [],
+                                      parentTask: null,
+                                      taskList: {
                                         id: 1,
-                                        name: 'Test Workspace',
-                                        isDefault: false,
-                                        games: null,
-                                        taskLists: null,
-                                        userWorkspaces: null,
+                                        name: 'Test List',
+                                        workspace: {
+                                          id: 1,
+                                          name: 'Test Workspace',
+                                          isDefault: false,
+                                          games: null,
+                                          taskLists: null,
+                                          userWorkspaces: null,
+                                        },
+                                        tasks: null,
                                       },
-                                      tasks: null,
+                                      users: [],
                                     },
-                                    users: [],
-                                  },
+                                  ],
+                                  1,
                                 ],
-                                1,
-                              ],
+                              }),
                             }),
                           }),
                         }),
@@ -154,6 +159,7 @@ describe('TasksController', () => {
                 }),
               }),
             }),
+            update: jest.fn().mockImplementation(() => Promise.resolve()),
           },
         },
         {
@@ -308,6 +314,7 @@ describe('TasksController', () => {
       assignedUserIds: undefined,
       finishDate: undefined,
       isDone: false,
+      isDeleted: false,
       parentTaskId: 0,
     };
 
@@ -330,6 +337,7 @@ describe('TasksController', () => {
           assignedUserIds: [],
           finishDate: null,
           isDone: false,
+          isDeleted: false,
           parentTaskId: 0,
         },
       ],
@@ -358,7 +366,9 @@ describe('TasksController', () => {
       assignedUserIds: [],
       finishDate: null,
       isDone: false,
+      isDeleted: false,
       parentTaskId: 0,
+      childrenTasks: [],
     };
 
     const actual = await controller.findOne('1');
@@ -390,6 +400,7 @@ describe('TasksController', () => {
       assignedUserIds: [],
       finishDate: null,
       isDone: false,
+      isDeleted: false,
       parentTaskId: 0,
     };
 
@@ -424,6 +435,7 @@ describe('TasksController', () => {
       taskListId: 1,
       parentTaskId: 1,
       isDone: true,
+      isDeleted: false,
       assignedUserIds: [],
       finishDate: null,
     };
@@ -461,6 +473,7 @@ describe('TasksController', () => {
       assignedUserIds: [],
       finishDate: null,
       isDone: false,
+      isDeleted: false,
       parentTaskId: 0,
     };
 

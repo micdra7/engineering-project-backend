@@ -7,7 +7,7 @@ import { Connection } from 'typeorm';
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -19,7 +19,7 @@ describe('AuthController (e2e)', () => {
     await request(app.getHttpServer()).post('/seeder');
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     const connection = app.get(Connection);
     await connection.close();
   });
@@ -81,14 +81,14 @@ describe('AuthController (e2e)', () => {
   it('/auth/login fails for invalid credentials (POST)', () => {
     return request(app.getHttpServer())
       .post('/auth/login')
-      .send({ email: 'test@test.net', password: 'QWE12345rty$a' })
+      .send({ email: 'test@test.net', password: 'Qwerty123!abc' })
       .expect(401);
   });
 
   it('/auth/login succeeds for valid credentials (POST)', () => {
     return request(app.getHttpServer())
       .post('/auth/login')
-      .send({ email: 'test@test.net', password: 'QWE12345rty$' })
+      .send({ email: 'test@test.net', password: 'Qwerty123!' })
       .expect(200);
   });
 
@@ -113,7 +113,7 @@ describe('AuthController (e2e)', () => {
   it('/auth/refresh succeeds for valid refresh token (POST)', async () => {
     const result = await request(app.getHttpServer())
       .post('/auth/login')
-      .send({ email: 'test@test.net', password: 'QWE12345rty$' });
+      .send({ email: 'test@test.net', password: 'Qwerty123!' });
 
     const body = result.body;
 
@@ -130,7 +130,7 @@ describe('AuthController (e2e)', () => {
   it('/auth/switch fails for empty body (POST)', async () => {
     const response = await request(app.getHttpServer())
       .post('/auth/login')
-      .send({ email: 'test@test.net', password: 'QWE12345rty$' });
+      .send({ email: 'test@test.net', password: 'Qwerty123!' });
     const token = response.body.accessToken;
 
     return request(app.getHttpServer())
@@ -142,7 +142,7 @@ describe('AuthController (e2e)', () => {
   it('/auth/switch fails dto validation (POST)', async () => {
     const response = await request(app.getHttpServer())
       .post('/auth/login')
-      .send({ email: 'test@test.net', password: 'QWE12345rty$' });
+      .send({ email: 'test@test.net', password: 'Qwerty123!' });
     const token = response.body.accessToken;
 
     return request(app.getHttpServer())
@@ -160,10 +160,10 @@ describe('AuthController (e2e)', () => {
   it('/auth/switch fails if user does not belong to workspace (POST)', async () => {
     const response = await request(app.getHttpServer())
       .post('/auth/login')
-      .send({ email: 'test@test.net', password: 'QWE12345rty$' });
+      .send({ email: 'test@test.net', password: 'Qwerty123!' });
     const extraUserResponse = await request(app.getHttpServer())
       .post('/auth/login')
-      .send({ email: 'test2@test.net', password: 'QWE12345rty$' });
+      .send({ email: 'test2@test.net', password: 'Qwerty123!' });
     const token = response.body.accessToken;
 
     return request(app.getHttpServer())
@@ -181,7 +181,7 @@ describe('AuthController (e2e)', () => {
   it('/auth/switch succeeds for valid DTO (POST)', async () => {
     const response = await request(app.getHttpServer())
       .post('/auth/login')
-      .send({ email: 'test@test.net', password: 'QWE12345rty$' });
+      .send({ email: 'test@test.net', password: 'Qwerty123!' });
     const token = response.body.accessToken;
 
     return request(app.getHttpServer())

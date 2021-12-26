@@ -216,14 +216,12 @@ export class SeederService {
         content: 'Test message 1',
         user: users[0],
         sendTime: currentDate,
-        filePath: '',
       },
       {
         chatroom: dbChatrooms[0],
         content: 'Test message 2',
         user: users[1],
         sendTime: currentDate,
-        filePath: '',
       },
     ];
 

@@ -8,7 +8,7 @@ describe('TasksController (e2e)', () => {
   let app: INestApplication;
   let token: string;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -21,11 +21,11 @@ describe('TasksController (e2e)', () => {
     token = await (
       await request(app.getHttpServer())
         .post('/auth/login')
-        .send({ email: 'test@test.net', password: 'QWE12345rty$' })
+        .send({ email: 'test@test.net', password: 'Qwerty123!' })
     ).body.accessToken;
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     const connection = app.get(Connection);
     await connection.close();
   });

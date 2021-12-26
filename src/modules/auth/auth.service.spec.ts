@@ -90,7 +90,7 @@ describe('AuthService', () => {
 
                 return Promise.resolve(null);
               }),
-            getUserWorkspaces: jest
+            findUserWorkspaces: jest
               .fn()
               .mockImplementation(
                 (userId: number): Promise<UserWorkspacesResponse[]> => {
