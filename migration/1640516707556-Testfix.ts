@@ -1,7 +1,7 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class dbSetup1635520784879 implements MigrationInterface {
-    name = 'dbSetup1635520784879'
+export class Testfix1640516707556 implements MigrationInterface {
+    name = 'Testfix1640516707556'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "task" ("id" SERIAL NOT NULL, "name" character varying NOT NULL, "description" character varying NOT NULL, "startDate" TIMESTAMP NOT NULL, "finishDate" TIMESTAMP, "isDeleted" boolean, "isDone" boolean, "parentTaskId" integer, "taskListId" integer, CONSTRAINT "PK_fb213f79ee45060ba925ecd576e" PRIMARY KEY ("id"))`);
@@ -11,7 +11,7 @@ export class dbSetup1635520784879 implements MigrationInterface {
         await queryRunner.query(`CREATE TABLE "game" ("id" SERIAL NOT NULL, "name" character varying NOT NULL, "filepath" character varying NOT NULL, "workspaceId" integer, CONSTRAINT "PK_352a30652cd352f552fef73dec5" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "workspace" ("id" SERIAL NOT NULL, "name" character varying NOT NULL, "isDefault" boolean NOT NULL DEFAULT false, CONSTRAINT "PK_ca86b6f9b3be5fe26d307d09b49" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "user_workspaces" ("id" SERIAL NOT NULL, "userId" integer NOT NULL, "role" integer NOT NULL, "workspaceId" integer NOT NULL, CONSTRAINT "PK_3c26b2f35801149e8f0af2e4fb0" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "message" ("id" SERIAL NOT NULL, "content" character varying NOT NULL, "filePath" character varying NOT NULL, "sendTime" TIMESTAMP NOT NULL, "userId" integer, "chatroomId" integer, CONSTRAINT "PK_ba01f0a3e0123651915008bc578" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "message" ("id" SERIAL NOT NULL, "content" character varying NOT NULL, "sendTime" TIMESTAMP NOT NULL, "userId" integer, "chatroomId" integer, CONSTRAINT "PK_ba01f0a3e0123651915008bc578" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "chatroom" ("id" SERIAL NOT NULL, "name" character varying NOT NULL, CONSTRAINT "PK_1e5ce0a999152e29952194d01ff" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "user_chatrooms" ("id" SERIAL NOT NULL, "userId" integer NOT NULL, "chatroomId" integer NOT NULL, CONSTRAINT "PK_b35af7c7a0e632bde96954ae18d" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "user" ("id" SERIAL NOT NULL, "email" character varying NOT NULL, "firstName" character varying NOT NULL, "lastName" character varying NOT NULL, "passwordHash" character varying NOT NULL, "isActive" boolean NOT NULL DEFAULT true, CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`);

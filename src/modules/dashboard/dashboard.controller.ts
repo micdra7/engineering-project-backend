@@ -7,8 +7,8 @@ import {
   Req,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ApiPaginatedResponse } from 'src/utils/pagination.decorator';
-import { PaginationResponse } from 'src/utils/pagination.response';
+import { ApiPaginatedResponse } from '../../utils/pagination.decorator';
+import { PaginationResponse } from '../../utils/pagination.response';
 import { CallResponse } from '../calls/response/call.response';
 import { TaskItemResponse } from '../tasks/response/task-item.response';
 import { DashboardService } from './dashboard.service';
